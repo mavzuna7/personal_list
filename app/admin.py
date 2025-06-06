@@ -1,15 +1,22 @@
 from django.contrib import admin
-
-from django.contrib import admin
 from .models import User, Genre, Category, Collection, Content
+from django import forms
 
+class UserAdminForm(forms.ModelForm):
+    class Meta:
+        model = User
+        fields = '__all__'
+
+    def clean_username(self):
+        username = self.cleaned_data['username']
+        if User.objects.filter(username=username).exists():
+            raise forms.ValidationError("Пользователь с таким именем уже существует.")
+        return username
 
 @admin.register(User)
 class UserAdmin(admin.ModelAdmin):
-    list_display = ('user_id', 'email')
-    search_fields = ('email',)
-    ordering = ('user_id',)
-
+    list_display = ('username', 'email')  # отображение полей
+    search_fields = ('username', 'email')  # поиск по полям
 
 @admin.register(Genre)
 class GenreAdmin(admin.ModelAdmin):
@@ -37,3 +44,4 @@ class ContentAdmin(admin.ModelAdmin):
     list_filter = ('type', 'genre', 'category', 'release_year')
     search_fields = ('description', 'country', 'director', 'actor')
     readonly_fields = ('created_at', 'updated_at')
+

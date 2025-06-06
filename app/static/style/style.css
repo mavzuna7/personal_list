@@ -1,0 +1,122 @@
+body {
+    margin: 0;
+    font-family: sans-serif;
+    background-color: #ffffff;
+    color: #333;
+}
+
+header {
+    background-color: #ffffff;
+    padding: 10px 15px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.logo img {
+    height: 110px;
+    margin-right: 15px;
+}
+
+nav a, .username {
+    text-decoration: none;
+    color: #333;
+    font-weight: bold;
+    margin-left: 20px;
+}
+
+nav a:hover, .username:hover {
+    text-decoration: underline;
+    color: #000000;
+}
+
+main {
+    padding: 20px;
+    max-width: 800px;
+    margin: auto;
+}
+
+.page-title {
+    color: #ff6b35;
+    text-align: center;
+    margin-top: 20px;
+}
+
+.search-form {
+    margin-top: 20px;
+    display: flex;
+    align-items: center;
+}
+
+.search-form input {
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    width: 300px;
+}
+
+.search-form button {
+    background-color: #ff6b35;
+    color: white;
+    border: none;
+    padding: 10px;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.content-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 20px;
+    margin-top: 20px;
+}
+
+.card {
+    background-color: rgb(255, 211, 211);
+    padding: 15px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+.card h3 {
+    margin-top: 0;
+}
+
+.card p {
+    margin-bottom: 0;
+}
+
+.profile-info {
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 0 5px rgba(0,0,0,0.1);
+    max-width: 500px;
+    margin: auto;
+}
+
+.profile-info p {
+    margin-bottom: 10px;
+}
+
+.btn {
+    display: inline-block;
+    margin-top: 20px;
+    padding: 10px 20px;
+    background-color: #dc3545;
+    color: white;
+    text-decoration: none;
+    border-radius: 4px;
+}
+
+.btn:hover {
+    background-color: #c82333;
+}
+
+.error {
+    color: red;
+    font-size: 14px;
+}

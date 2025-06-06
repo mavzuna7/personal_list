@@ -1,0 +1,24 @@
+{% extends "app/base.html" %}
+{% block title %}Мой список контента{% endblock %}
+{% block content %}
+    <h1 class="page-title">Мой список контента</h1>
+
+    <!-- Поиск -->
+    <form class="search-form">
+        <input type="text" placeholder="Поиск" name="q">
+        <button type="submit"><i class="fas fa-search"></i></button>
+    </form>
+
+    <!-- Карточки контента -->
+    <div class="content-cards">
+        {% for content in contents %}
+            <div class="card">
+                <h3>{{ content.title }}</h3>
+                <p>{{ content.description }}</p>
+                <p>{{ content.status }}</p>
+            </div>
+        {% empty %}
+            <p>У вас пока нет добавленного контента.</p>
+        {% endfor %}
+    </div>
+{% endblock %}
