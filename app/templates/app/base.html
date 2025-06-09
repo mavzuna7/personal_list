@@ -1,5 +1,3 @@
-<!-- app/templates/app/base.html -->
-
 {% load static %}
 <!DOCTYPE html>
 <html lang="ru">
@@ -11,11 +9,10 @@
 <body>
 
 <header>
-    <div class="logo">
-        <a href="{% url 'home' %}">
-            <img src="{% static 'img/photo_2025-06-04_16-57-44-Photoroom.png' %}" alt="Логотип Personal List">
-        </a>
-    </div>
+    <a href="{% url 'home' %}" class="logo">
+        <img src="{% static 'img/photo_2025-06-04_16-57-44-Photoroom-Photoroom-Photoroom.png' %}" alt="Логотип Personal List">
+        <span class="logo-text">Personal List</span>
+    </a>
     <nav>
         <a href="#">Коллекции</a>
         {% if request.user.is_authenticated %}
