@@ -8,21 +8,24 @@
 </head>
 <body>
 
-<header>
-    <a href="{% url 'home' %}" class="logo">
-        <img src="{% static 'img/photo_2025-06-04_16-57-44-Photoroom-Photoroom-Photoroom.png' %}" alt="Логотип Personal List">
-        <span class="logo-text">Personal List</span>
-    </a>
-    <nav>
-        <a href="#">Коллекции</a>
-        {% if request.user.is_authenticated %}
-            <a href="{% url 'logout' %}">Выход</a>
-            <span class="username">{{ request.user.username }}</span>
-        {% else %}
-            <a href="{% url 'login' %}">Войти</a>
-            <a href="{% url 'register' %}">Зарегистрироваться</a>
-        {% endif %}
-    </nav>
+<header class="header">
+    <div class="header-inner">
+        <a href="{% url 'home' %}" class="logo"> 
+            <img src="{% static 'img/photo_2025-06-04_16-57-44-Photoroom-Photoroom-Photoroom.png' %}" alt="Логотип Personal List">
+            <span class="logo-text">Personal List</span>
+        </a>
+
+        <nav class="nav">
+            <a href="{% url 'collections' %}" class="nav-link">Коллекции</a>
+            {% if user.is_authenticated %}
+                <span class="nav-link" style="font-weight: 600; cursor: default;">{{ user.username }}</span>
+                <a href="{% url 'logout' %}" class="nav-link">Выход</a>
+            {% else %}
+                <a href="{% url 'login' %}" class="nav-link">Вход</a>
+                <a href="{% url 'register' %}" class="nav-link">Регистрация</a>
+            {% endif %}
+        </nav>
+    </div>
 </header>
 
 <main>
@@ -30,6 +33,7 @@
     {% endblock %}
 </main>
 
+<script src="{% static 'js/filters.js' %}"></script>
 </body>
 </html>
 

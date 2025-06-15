@@ -1,0 +1,151 @@
+
+{% block content %}
+<style>
+    html, body {
+        height: 100vh;
+        overflow: hidden;
+    }
+    .welcome-bg {
+        position: fixed;
+        z-index: 0;
+        top: 0; left: 0; right: 0; bottom: 0;
+        width: 100vw;
+        height: 100vh;
+        background: linear-gradient(120deg, #a1c4fd 0%, #c2e9fb 50%, #fbc2eb 100%);
+    }
+    .welcome-page {
+        min-height: 80vh;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        margin: 40px auto;
+        max-width: 700px;
+        padding: 48px 32px 56px 32px;
+        z-index: 2;
+        position: relative;
+    }
+    .welcome-page img {
+        width: 500px;
+        margin-bottom: 20px;
+    }
+    .welcome-page p {
+        font-size: 1.2rem;
+        margin-bottom: 5px;
+        color: #000000;
+        text-align: center;
+        margin-top: 0;
+        font-weight: 200;
+        text-shadow: 1px 1px 1px #ffffff;
+        font-family:unset
+    }
+    .welcome-actions {
+        display: flex;
+        gap: 2.5rem;
+        margin-top: 2rem;
+    }
+    .welcome-btn {
+        font-size: 1.3rem;
+        text-decoration: none;
+        color: #fff;
+        background: #798df3;
+        border: none;
+        border-radius: 8px;
+        padding: 14px 32px;
+        font-weight: 600;
+        box-shadow: 0 2px 8px 0 rgba(31, 38, 135, 0.10);
+        transition: background 0.2s, color 0.2s, box-shadow 0.2s;
+        outline: none;
+    }
+    .welcome-btn:hover {
+        background: #e49ddd;
+        color: #fff;
+        box-shadow: 0 4px 16px 0 rgba(31, 38, 135, 0.15);
+    }
+    @media (max-width: 600px) {
+        .welcome-page {
+            padding: 18px 4vw 18px 4vw;
+            min-width: 0;
+        }
+        .welcome-page img {
+            width: 120px;
+        }
+        .welcome-page h1 {
+            font-size: 2rem;
+        }
+        .welcome-btn {
+            font-size: 1rem;
+            padding: 10px 18px;
+        }
+        .welcome-actions {
+            gap: 1rem;
+        }
+    }
+
+
+.floating-poster {
+    position: fixed;
+    width: 200px;
+    height: 300px;
+    object-fit: cover;
+    z-index: 1;
+    opacity: 0.85;
+    pointer-events: none;
+    border-radius: 16px;
+    box-shadow: 0 4px 16px 0 rgba(31, 38, 135, 0.10);
+    animation: poster-move 22s linear infinite;
+}
+.floating-poster.left1 { left: 30px; }
+.floating-poster.left2 { left: 260px; }
+.floating-poster.right1 { right: 30px; }
+.floating-poster.right2 { right: 260px; }
+
+/* Увеличенные отступы между постерами */
+.floating-poster.p1 { animation-delay: 0s; top: -350px; }
+.floating-poster.p2 { animation-delay: 5.5s; top: -750px; }
+.floating-poster.p3 { animation-delay: 11s; top: -1150px; }
+.floating-poster.p4 { animation-delay: 16.5s; top: -1550px; }
+
+.floating-poster.p5 { animation-delay: 2.75s; top: -550px; }
+.floating-poster.p6 { animation-delay: 8.25s; top: -950px; }
+.floating-poster.p7 { animation-delay: 13.75s; top: -1350px; }
+.floating-poster.p8 { animation-delay: 19.25s; top: -1750px; }
+
+@keyframes poster-move {
+    0% { top: -350px; }
+    100% { top: 130vh; }
+}
+</style>
+<div class="welcome-bg"></div>
+
+    <!-- Левый первый ряд -->
+    <img src="/static/img/posters/poster1.webp" class="floating-poster left1 p1" alt="Постер 1">
+    <img src="/static/img/posters/poster10.webp" class="floating-poster left1 p2" alt="Постер 2">
+    <img src="/static/img/posters/poster9.webp" class="floating-poster left1 p3" alt="Постер 3">
+    <img src="/static/img/posters/poster5.webp" class="floating-poster left1 p4" alt="Постер 4">
+    <!-- Левый второй ряд (шахматно) -->
+    <img src="/static/img/posters/poster7.webp" class="floating-poster left2 p5" alt="Постер 5">
+    <img src="/static/img/posters/poster15.webp" class="floating-poster left2 p6" alt="Постер 6">
+    <img src="/static/img/posters/poster8.webp" class="floating-poster left2 p7" alt="Постер 7">
+    <img src="/static/img/posters/poster13.webp" class="floating-poster left2 p8" alt="Постер 8">
+
+    <!-- Правый первый ряд -->
+    <img src="/static/img/posters/poster2.webp" class="floating-poster right1 p1" alt="Постер 1">
+    <img src="/static/img/posters/poster6.webp" class="floating-poster right1 p2" alt="Постер 2">
+    <img src="/static/img/posters/poster4.webp" class="floating-poster right1 p3" alt="Постер 3">
+    <img src="/static/img/posters/poster14.webp" class="floating-poster right1 p4" alt="Постер 4">
+    <!-- Правый второй ряд (шахматно) -->
+    <img src="/static/img/posters/poster12.webp" class="floating-poster right2 p5" alt="Постер 5">
+    <img src="/static/img/posters/poster11.webp" class="floating-poster right2 p6" alt="Постер 6">
+    <img src="/static/img/posters/poster3.webp" class="floating-poster right2 p7" alt="Постер 7">
+    <img src="/static/img/posters/poster16.webp" class="floating-poster right2 p8" alt="Постер 8">
+<!-- Плавающие киноплёнки -->
+<div class="welcome-page">
+    <img src="/static/img/photo_2025-06-04_16-57-44-Photoroom (1) (1).png" alt="Personal List Logo">
+    <p>ОРГАНИЗУЙ СВОЙ КИНОМИР: СОХРАНЯЙ, СМОТРИ, ВСПОМИНАЙ!</p>
+    <div class="welcome-actions">
+        <a href="{% url 'login' %}" class="welcome-btn">Войти</a>
+        <a href="{% url 'register' %}" class="welcome-btn">Зарегистрироваться</a>
+    </div>
+</div>
+{% endblock %} 

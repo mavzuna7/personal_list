@@ -1,0 +1,38 @@
+{% extends "app/base.html" %}
+{% block title %}Мои коллекции{% endblock %}
+
+{% block content %}
+<div class="collections-container">
+    <h1 class="page-title">Мои коллекции</h1>
+
+    <div class="collections-grid">
+        {% for collection in collections %}
+            <div class="collection-card">
+                <h3>{{ collection.collection_name }}</h3>
+                <div class="collection-content">
+                    {% for content in collection.content_set.all|slice:":3" %}
+                        <div class="collection-item">
+                            {% if content.image %}
+                                <img src="{{ content.image.url }}" alt="{{ content.title }}" class="collection-item-image">
+                            {% else %}
+                                <div class="collection-item-placeholder">Нет изображения</div>
+                            {% endif %}
+                        </div>
+                    {% endfor %}
+                </div>
+                <div class="collection-footer">
+                    <span class="collection-count">{{ collection.content_set.count }} элементов</span>
+                    <a href="{% url 'collection_detail' collection.collection_id %}" class="btn">Подробнее</a>
+                </div>
+            </div>
+        {% empty %}
+        {% endfor %}
+    </div>
+
+    {% if collections %}
+        <div class="add-collection-button">
+            <a href="{% url 'add_collection' %}" class="btn btn-primary">Создать новую коллекцию</a>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

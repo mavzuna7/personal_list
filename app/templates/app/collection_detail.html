@@ -1,0 +1,61 @@
+{% extends "app/base.html" %}
+{% block title %}{{ collection.name }}{% endblock %}
+
+{% block content %}
+<div class="collection-detail-page">
+    <div class="collection-header">
+        <h1>{{ collection.name }}</h1>
+        <div class="collection-actions">
+            <a href="{% url 'edit_content' content_id=collection.collection_id %}" class="btn-edit">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                    <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+                </svg>
+                Редактировать
+            </a>
+            <a href="{% url 'delete_collection' collection_id=collection.collection_id %}" class="btn-delete">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M3 6h18"></path>
+                    <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                </svg>
+                Удалить
+            </a>
+        </div>
+    </div>
+
+    <div class="collection-contents">
+        {% if contents %}
+            {% for content in contents %}
+                <div class="content-card">
+                    {% if content.image %}
+                        <img src="{{ content.image.url }}" alt="{{ content.title }}" class="content-image">
+                    {% else %}
+                        <div class="content-image-placeholder">
+                            <span>Нет постера</span>
+                        </div>
+                    {% endif %}
+                    <div class="content-info">
+                        <h2>{{ content.title }}</h2>
+                        <div class="content-meta">
+                            {% if content.release_year %}
+                                <span>Год: {{ content.release_year }}</span>
+                            {% endif %}
+                            {% if content.genre %}
+                                <span>Жанр: {{ content.genre.genre_name }}</span>
+                            {% endif %}
+                            {% if content.rating %}
+                                <span>Рейтинг: {{ content.rating }}</span>
+                            {% endif %}
+                        </div>
+                        <div class="content-actions">
+                            <a href="{% url 'content_detail' content_id=content.content_id %}" class="btn-view">Подробнее</a>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        {% else %}
+            <p class="no-contents">В этой коллекции пока нет контента</p>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

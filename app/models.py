@@ -1,16 +1,13 @@
 from django.db import models
+from django.contrib.auth.models import AbstractUser
+from django.contrib.auth.hashers import check_password
 
-
-class User(models.Model):
+class User(AbstractUser):
     user_id = models.AutoField(primary_key=True, verbose_name='ID пользователя')
-    username = models.CharField(
-        max_length=150,
-        unique=True,
-        verbose_name='Имя пользователя',
-        default='default_username'  # <-- добавили значение по умолчанию
-    )
     email = models.EmailField(unique=True, verbose_name='Электронная почта')
-    password_hash = models.CharField(max_length=255, verbose_name='Хэш пароля')
+
+    USERNAME_FIELD = 'username'
+    REQUIRED_FIELDS = ['email']
 
     class Meta:
         verbose_name = "Пользователь"
@@ -18,8 +15,6 @@ class User(models.Model):
 
     def __str__(self):
         return self.username
-
-
 
 class Genre(models.Model):
     genre_id = models.AutoField(primary_key=True, verbose_name='ID жанра')
@@ -52,41 +47,41 @@ class Category(models.Model):
 
 class Collection(models.Model):
     collection_id = models.AutoField(primary_key=True, verbose_name='ID коллекции')
-    user = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name='Пользователь')
     collection_name = models.CharField(max_length=100, verbose_name='Название коллекции')
+   
 
     class Meta:
         verbose_name = "Коллекция"
         verbose_name_plural = "Коллекции"
 
     def __str__(self):
-        return f"{self.collection_name} ({self.user.email})"
+        return self.collection_name
 
 
 class Content(models.Model):
     content_id = models.AutoField(primary_key=True, verbose_name='ID контента')
-    user = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name='Пользователь')
+    title = models.CharField(max_length=255, null=True, blank=True, verbose_name='Название')
     genre = models.ForeignKey(Genre, on_delete=models.SET_NULL, null=True, verbose_name='Жанр')
     collection = models.ForeignKey(Collection, on_delete=models.SET_NULL, null=True, blank=True, verbose_name='Коллекция')
     category = models.ForeignKey(Category, on_delete=models.SET_NULL, null=True, verbose_name='Категория')
+    image = models.ImageField(upload_to='content_posters/', null=True, blank=True, verbose_name='Постер')
+    user = models.ForeignKey(User, on_delete=models.CASCADE, null=True, verbose_name='Пользователь')
 
     STATUS_CHOICES = [
         ('watching', 'Смотрю'),
         ('planned', 'Запланировано'),
         ('completed', 'Просмотрено'),
         ('paused', 'На паузе'),
+        ('dropped', 'Брошено'),
     ]
     status = models.CharField(max_length=50, choices=STATUS_CHOICES, verbose_name='Статус')
 
     rating = models.DecimalField(max_digits=3, decimal_places=1, null=True, blank=True, verbose_name='Оценка')
     comment = models.TextField(null=True, blank=True, verbose_name='Комментарий')
-    progress = models.CharField(max_length=100, null=True, blank=True, verbose_name='Прогресс')
+    
 
-    TYPE_CHOICES = [
-        ('movie', 'Фильм'),
-        ('series', 'Сериал'),
-    ]
-    type = models.CharField(max_length=20, choices=TYPE_CHOICES, verbose_name='Тип')  # фильм или сериал
+    
+    
 
     release_year = models.IntegerField(verbose_name='Год выпуска')
     description = models.TextField(null=True, blank=True, verbose_name='Описание')
@@ -102,4 +97,4 @@ class Content(models.Model):
         verbose_name_plural = "Элементы контента"
 
     def __str__(self):
-        return f"{self.type}: {self.description[:30]}"
+        return f"{self.title or 'Без названия'}: {self.description[:30] if self.description else ''}"

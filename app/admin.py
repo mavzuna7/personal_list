@@ -1,22 +1,12 @@
 from django.contrib import admin
+from django.contrib.auth.admin import UserAdmin
 from .models import User, Genre, Category, Collection, Content
-from django import forms
-
-class UserAdminForm(forms.ModelForm):
-    class Meta:
-        model = User
-        fields = '__all__'
-
-    def clean_username(self):
-        username = self.cleaned_data['username']
-        if User.objects.filter(username=username).exists():
-            raise forms.ValidationError("Пользователь с таким именем уже существует.")
-        return username
 
 @admin.register(User)
-class UserAdmin(admin.ModelAdmin):
-    list_display = ('username', 'email')  # отображение полей
-    search_fields = ('username', 'email')  # поиск по полям
+class CustomUserAdmin(UserAdmin):
+    model = User
+    list_display = ('username', 'email')
+    search_fields = ('username', 'email')
 
 @admin.register(Genre)
 class GenreAdmin(admin.ModelAdmin):
@@ -33,15 +23,14 @@ class CategoryAdmin(admin.ModelAdmin):
 
 @admin.register(Collection)
 class CollectionAdmin(admin.ModelAdmin):
-    list_display = ('collection_id', 'collection_name', 'user')
+    list_display = ('collection_id', 'collection_name')
     search_fields = ('collection_name',)
-    list_filter = ('user',)
 
 
 @admin.register(Content)
 class ContentAdmin(admin.ModelAdmin):
-    list_display = ('content_id', 'type', 'user', 'genre', 'category', 'release_year', 'rating')
-    list_filter = ('type', 'genre', 'category', 'release_year')
-    search_fields = ('description', 'country', 'director', 'actor')
+    list_display = ('content_id', 'title', 'genre', 'category', 'release_year', 'rating')
+    list_filter = ('genre', 'category', 'release_year')
+    search_fields = ('title', 'description', 'country', 'director', 'actor')
     readonly_fields = ('created_at', 'updated_at')
 

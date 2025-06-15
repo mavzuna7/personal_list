@@ -1,0 +1,35 @@
+{% extends "app/base.html" %}
+{% block title %}Коллекции{% endblock %}
+
+{% block content %}
+<div class="collections-tabs-container">
+    <div class="collections-tabs">
+        {% for key, label in status_map.items %}
+            <a href="?status={{ key }}" class="collections-tab{% if selected_status == key %} active{% endif %}">{{ label }}</a>
+        {% endfor %}
+    </div>
+</div>
+
+<div class="selected-collection-content">
+    <h2>{{ selected_status_label }}</h2>
+    <div class="collection-content-grid">
+        {% for content in contents %}
+            <a href="{% url 'content_detail' content.content_id %}" class="collection-content-card">
+                {% if content.image %}
+                    <img src="{{ content.image.url }}" alt="{{ content.title }}" class="collection-content-image">
+                {% endif %}
+                <div class="collection-content-info">
+                    <h3>{{ content.title }}</h3>
+                    <p>{{ content.description|truncatechars:80 }}</p>
+                    <div class="collection-content-meta">
+                        <span>{{ content.release_year }}</span>
+                        <span>{{ content.genre.genre_name }}</span>
+                    </div>
+                </div>
+            </a>
+        {% empty %}
+            <p>В этой коллекции пока нет контента.</p>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %} 

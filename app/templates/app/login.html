@@ -4,106 +4,37 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Вход</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f7f7f7;
-            padding: 40px;
-        }
-
-        .container {
-            max-width: 400px;
-            margin: auto;
-            background: white;
-            padding: 30px;
-            border-radius: 8px;
-            box-shadow: 0 0 10px rgba(0,0,0,0.1);
-        }
-
-        h2 {
-            text-align: center;
-            margin-bottom: 20px;
-        }
-
-        .form-group {
-            margin-bottom: 15px;
-        }
-
-        label {
-            display: block;
-            margin-bottom: 5px;
-        }
-
-        input[type="text"],
-        input[type="password"] {
-            width: 100%;
-            padding: 8px;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-        }
-
-        .errorlist {
-            color: red;
-            font-size: 14px;
-        }
-
-        button {
-            width: 100%;
-            padding: 10px;
-            background-color: #007BFF;
-            color: white;
-            border: none;
-            border-radius: 4px;
-            font-size: 16px;
-        }
-
-        button:hover {
-            background-color: #0056b3;
-        }
-
-        .messages {
-            list-style: none;
-            padding-left: 0;
-            margin-bottom: 20px;
-        }
-
-        .messages li {
-            padding: 10px;
-            border-radius: 4px;
-            color: white;
-        }
-
-        .success {
-            background-color: #28a745;
-        }
-
-        .error {
-            background-color: #dc3545;
-        }
-    </style>
+    {% load static %}
+    <link rel="stylesheet" type="text/css" href="{% static 'style/style.css' %}">
 </head>
-<body>
+<body class="form-centered">
 
 <div class="container">
-    <h2>Вход</h2>
+    <div class="back-to-home">
+        <a href="{% url 'home' %}" class="back-button styled-home-btn">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M19 12H5M12 19l-7-7 7-7"/>
+            </svg>
+            На главную
+        </a>
+    </div>
 
-    {% if messages %}
+    <h2>Вход в систему</h2>
+
+    {% if request.method == 'POST' and messages %}
         <ul class="messages">
             {% for message in messages %}
-                <li class="{{ message.tags }}">{{ message }}</li>
+                {% if 'success' not in message.tags %}
+                    <li class="{{ message.tags }}">{{ message }}</li>
+                {% endif %}
             {% endfor %}
         </ul>
     {% endif %}
 
-    <form method="post">
+    <form method="post" autocomplete="off">
         {% csrf_token %}
-
-        {% if form.non_field_errors %}
-            <div class="error">
-                {{ form.non_field_errors }}
-            </div>
-        {% endif %}
 
         {% for field in form %}
             <div class="form-group">
@@ -118,8 +49,39 @@
         {% endfor %}
 
         <button type="submit">Войти</button>
+        
+        <div style="text-align: center; margin-top: 20px;">
+            <p style="color: #666; font-size: 14px;">
+                Нет аккаунта? <a href="{% url 'register' %}" style="color: #667eea; text-decoration: none; font-weight: 500;">Зарегистрироваться</a>
+            </p>
+        </div>
     </form>
 </div>
+
+<style>
+    html, body {
+        overflow: hidden;
+        margin: 0;
+        padding: 0;
+    }
+.styled-home-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: #667eea;
+    color: #fff !important;
+    border: none;
+    border-radius: 8px;
+    padding: 10px 22px;
+    font-size: 1rem;
+    font-weight: 500;
+    box-shadow: 0 2px 8px 0 rgba(31, 38, 135, 0.10);
+    transition: background 0.2s, color 0.2s, box-shadow 0.2s;
+    text-decoration: none;
+    margin-bottom: 18px;
+}
+
+</style>
 
 </body>
 </html>

@@ -1,24 +1,266 @@
 {% extends "app/base.html" %}
-{% block title %}Мой список контента{% endblock %}
+{% block title %}Personal List{% endblock %}
 {% block content %}
-    <h1 class="page-title">Мой список контента</h1>
-
-    <!-- Поиск -->
-    <form class="search-form">
-        <input type="text" placeholder="Поиск" name="q">
-        <button type="submit"><i class="fas fa-search"></i></button>
+<div class="main-hero">
+    <h1 class="main-title">Personal List</h1>
+    <p class="main-subtitle">Сохраняйте и отслеживайте любимые фильмы и сериалы!</p>
+    <form class="search-form" method="get">
+        <input type="text" name="q" placeholder="Введите название" value="{{ search_query|default:'' }}">
+        <button type="submit">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="11" cy="11" r="8"></circle>
+                <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+            </svg>
+        </button>
     </form>
+</div>
 
-    <!-- Карточки контента -->
-    <div class="content-cards">
-        {% for content in contents %}
-            <div class="card">
-                <h3>{{ content.title }}</h3>
-                <p>{{ content.description }}</p>
-                <p>{{ content.status }}</p>
-            </div>
-        {% empty %}
-            <p>У вас пока нет добавленного контента.</p>
-        {% endfor %}
+<div class="filters-container">
+    <div class="action-buttons">
+        <button class="filter-button" id="openFilterModal">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M4 21v-7m0 0V4m0 10h16m-16 0h16M4 21h16"/>
+            </svg>
+            Фильтры
+            {% if selected_genre or selected_year or selected_status %}
+                <span class="active-filters-dot"></span>
+            {% endif %}
+        </button>
+        
+        <a href="{% url 'add_content' %}" class="add-content-button">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="12" y1="5" x2="12" y2="19"></line>
+                <line x1="5" y1="12" x2="19" y2="12"></line>
+            </svg>
+            Добавить контент
+        </a>
+        
+        <button class="recommendations-button" id="recommendationsButton">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M12 2L15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2z"/>
+            </svg>
+            Рекомендации
+        </button>
     </div>
+    
+    <div id="filterModal" class="modal" style="display:none;">
+        <div class="modal-overlay" id="closeFilterModal"></div>
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Фильтры</h2>
+                <button class="modal-close" id="closeFilterModalBtn">×</button>
+            </div>
+            <form method="get" class="filters-form">
+                <div class="filter-group">
+                    <label>Жанр</label>
+                    <select name="genre">
+                        <option value="">Все жанры</option>
+                        {% for genre in genres %}
+                            <option value="{{ genre.pk }}" {% if genre.pk|stringformat:'s' == selected_genre %}selected{% endif %}>{{ genre.genre_name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label>Год</label>
+                    <select name="year">
+                        <option value="">Все годы</option>
+                        {% for y in years %}
+                            <option value="{{ y }}" {% if y|stringformat:'s' == selected_year %}selected{% endif %}>{{ y }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label>Статус</label>
+                    <select name="status">
+                        <option value="">Все статусы</option>
+                        {% for value, label in statuses %}
+                            <option value="{{ value }}" {% if value == selected_status %}selected{% endif %}>{{ label }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="filter-actions">
+                    <button type="submit" class="apply-filters">Применить</button>
+                    <a href="{% url 'home' %}" class="clear-filters">Сбросить</a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="recommendations-dropdown" id="recommendationsDropdown">
+        <div class="recommendations-content">
+            <h3 class="recommendations-title">Рекомендации для вас</h3>
+            <div class="recommendations-list">
+                {% for rec in recommendations %}
+                    <div class="recommendation-item">
+                        <div class="recommendation-poster">
+                            {% if rec.image %}
+                                <img src="{{ rec.image.url }}" alt="{{ rec.description|default:'Постер' }}">
+                            {% else %}
+                                <img src="https://via.placeholder.com/120x180?text=No+Image" alt="Нет постера">
+                            {% endif %}
+                        </div>
+                        <div class="recommendation-info">
+                            <h4 class="recommendation-title">{{ rec.description|truncatechars:30 }}</h4>
+                            <div class="recommendation-meta">
+                                <span class="recommendation-year">{{ rec.release_year }}</span>
+                                <span class="recommendation-genre">{{ rec.genre.genre_name }}</span>
+                            </div>
+                            <div class="recommendation-rating">
+                                ⭐ {{ rec.rating|default:'N/A' }}
+                            </div>
+                        </div>
+                    </div>
+                {% empty %}
+                    <p class="no-recommendations">Нет рекомендаций.</p>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="main-content-grid">
+    <div class="content-section">
+        <div class="content-cards">
+            {% if user.is_authenticated %}
+                {% if contents %}
+                    {% for content in contents %}
+                        <a href="{% url 'content_detail' content.content_id %}" class="card movie-card">
+                            <div class="movie-poster">
+                                {% if content.image %}
+                                    <img src="{{ content.image.url }}" alt="{{ content.description|default:'Постер' }}">
+                                {% else %}
+                                    <img src="https://via.placeholder.com/180x260?text=No+Image" alt="Нет постера">
+                                {% endif %}
+                            </div>
+                            <div class="movie-info">
+                                <h3 class="movie-title">{{ content.title|truncatechars:30 }}</h3>
+                                <div class="movie-meta">
+                                    <span class="movie-year">{{ content.release_year }}</span>
+                                    <span class="movie-genre">{{ content.genre.genre_name }}</span>
+                                </div>
+                                <div class="movie-rating">
+                                    ⭐ {{ content.rating|default:'N/A' }}
+                                </div>
+                                <div class="movie-type">{{ content.get_type_display }}</div>
+                            </div>
+                        </a>
+                    {% endfor %}
+                {% elif search_query %}
+                    <p class="not-found-message">Ничего не найдено по вашему запросу.</p>
+                {% else %}
+                    <p>У вас пока нет добавленного контента.</p>
+                {% endif %}
+            {% else %}
+                <p style="text-align:center; margin-top:2em;">Войдите в аккаунт, чтобы видеть свои фильмы и сериалы!</p>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<!-- Модальное окно рекомендаций -->
+<div id="recommendationsModal" class="modal" style="display:none;">
+    <div class="modal-overlay" id="closeRecommendationsModal"></div>
+    <div class="modal-content" style="max-width: 600px; width: 98vw;">
+        <div class="modal-header">
+            <h2>Рекомендации для вас</h2>
+            <button class="modal-close" id="closeRecommendationsModalBtn">×</button>
+        </div>
+        <div class="recommendations-list-modal">
+            {% if recommendations %}
+                {% for rec in recommendations %}
+                    <div class="recommendation-item">
+                        <div class="recommendation-poster">
+                            {% if rec.image %}
+                                <img src="{{ rec.image.url }}" alt="{{ rec.title|default:'Постер' }}">
+                            {% else %}
+                                <img src="https://via.placeholder.com/120x180?text=No+Image" alt="Нет постера">
+                            {% endif %}
+                        </div>
+                        <div class="recommendation-info">
+                            <h4 class="recommendation-title">{{ rec.title|truncatechars:30 }}</h4>
+                            <div class="recommendation-meta">
+                                <span class="recommendation-year">{{ rec.release_year }}</span>
+                                <span class="recommendation-genre">{{ rec.genre.genre_name }}</span>
+                            </div>
+                            <div class="recommendation-rating">
+                                ⭐ {{ rec.rating|default:'N/A' }}
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            {% else %}
+                <p class="no-recommendations">Нет рекомендаций.</p>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<!-- Пагинация -->
+<div class="pagination">
+    {% if page_obj.has_previous %}
+        <a href="?page={{ page_obj.previous_page_number }}" class="page-link">&laquo;</a>
+    {% endif %}
+    {% for num in page_obj.paginator.page_range %}
+        {% if page_obj.number == num %}
+            <span class="current-page">{{ num }}</span>
+        {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+            <a href="?page={{ num }}" class="page-link">{{ num }}</a>
+        {% endif %}
+    {% endfor %}
+    {% if page_obj.has_next %}
+        <a href="?page={{ page_obj.next_page_number }}" class="page-link">&raquo;</a>
+    {% endif %}
+</div>
+
+<style>
+.pagination {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
+    margin: 32px 0 0 0;
+}
+.page-link, .current-page {
+    display: inline-block;
+    padding: 8px 14px;
+    border-radius: 8px;
+    background: #f6f8fb;
+    color: #667eea;
+    font-weight: 600;
+    text-decoration: none;
+    font-size: 1.1rem;
+    transition: background 0.2s, color 0.2s;
+}
+.page-link:hover {
+    background: #667eea;
+    color: #fff;
+}
+.current-page {
+    background: #667eea;
+    color: #fff;
+    cursor: default;
+}
+</style>
+
+<script>
+const openBtn = document.getElementById('openFilterModal');
+const modal = document.getElementById('filterModal');
+const closeBtn = document.getElementById('closeFilterModalBtn');
+const overlay = document.getElementById('closeFilterModal');
+if (openBtn && modal && closeBtn && overlay) {
+    openBtn.onclick = () => { modal.style.display = 'block'; document.body.style.overflow = 'hidden'; };
+    closeBtn.onclick = overlay.onclick = () => { modal.style.display = 'none'; document.body.style.overflow = ''; };
+}
+
+// Открытие/закрытие модального окна рекомендаций
+const recBtn = document.getElementById('recommendationsButton');
+const recModal = document.getElementById('recommendationsModal');
+const recCloseBtn = document.getElementById('closeRecommendationsModalBtn');
+const recOverlay = document.getElementById('closeRecommendationsModal');
+if (recBtn && recModal && recCloseBtn && recOverlay) {
+    recBtn.onclick = () => { recModal.style.display = 'flex'; document.body.style.overflow = 'hidden'; };
+    recCloseBtn.onclick = recOverlay.onclick = () => { recModal.style.display = 'none'; document.body.style.overflow = ''; };
+}
+</script>
 {% endblock %}
+

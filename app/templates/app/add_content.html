@@ -1,0 +1,116 @@
+{% extends "app/base.html" %}
+{% block title %}Добавить контент{% endblock %}
+
+{% block content %}
+<div class="add-content-page">
+    <div class="add-content-card">
+        <h1>Добавить новый контент</h1>
+        <form method="post" enctype="multipart/form-data" class="add-content-form">
+            {% csrf_token %}
+            
+            <div class="form-group">
+                <label for="{{ form.title.id_for_label }}">Название:</label>
+                {{ form.title }}
+                {% if form.title.errors %}
+                    <div class="error-message">{{ form.title.errors }}</div>
+                {% endif %}
+            </div>
+
+            <div class="form-group">
+                <label for="{{ form.genre.id_for_label }}">Жанр:</label>
+                {{ form.genre }}
+                {% if form.genre.errors %}
+                    <div class="error-message">{{ form.genre.errors }}</div>
+                {% endif %}
+            </div>
+
+            <div class="form-group">
+                <label for="{{ form.category.id_for_label }}">Категория:</label>
+                {{ form.category }}
+                {% if form.category.errors %}
+                    <div class="error-message">{{ form.category.errors }}</div>
+                {% endif %}
+            </div>
+
+            <div class="form-group">
+                <label for="{{ form.image.id_for_label }}">Постер:</label>
+                <div class="file-input-wrapper">
+                    {{ form.image }}
+                </div>
+                {% if form.image.errors %}
+                    <div class="error-message">{{ form.image.errors }}</div>
+                {% endif %}
+            </div>
+
+            <div class="form-group">
+                <label for="{{ form.status.id_for_label }}">Статус:</label>
+                {{ form.status }}
+                {% if form.status.errors %}
+                    <div class="error-message">{{ form.status.errors }}</div>
+                {% endif %}
+            </div>
+
+            <div class="form-group">
+                <label for="{{ form.rating.id_for_label }}">Оценка:</label>
+                {{ form.rating }}
+                {% if form.rating.errors %}
+                    <div class="error-message">{{ form.rating.errors }}</div>
+                {% endif %}
+            </div>
+
+            <div class="form-group">
+                <label for="{{ form.release_year.id_for_label }}">Год выпуска:</label>
+                {{ form.release_year }}
+                {% if form.release_year.errors %}
+                    <div class="error-message">{{ form.release_year.errors }}</div>
+                {% endif %}
+            </div>
+
+            <div class="form-group">
+                <label for="{{ form.description.id_for_label }}">Описание:</label>
+                {{ form.description }}
+                {% if form.description.errors %}
+                    <div class="error-message">{{ form.description.errors }}</div>
+                {% endif %}
+            </div>
+
+            <div class="form-group">
+                <label for="{{ form.country.id_for_label }}">Страна:</label>
+                {{ form.country }}
+                {% if form.country.errors %}
+                    <div class="error-message">{{ form.country.errors }}</div>
+                {% endif %}
+            </div>
+
+            <div class="form-group">
+                <label for="{{ form.director.id_for_label }}">Режиссёр:</label>
+                {{ form.director }}
+                {% if form.director.errors %}
+                    <div class="error-message">{{ form.director.errors }}</div>
+                {% endif %}
+            </div>
+
+            <div class="form-group">
+                <label for="{{ form.actor.id_for_label }}">Актёр:</label>
+                {{ form.actor }}
+                {% if form.actor.errors %}
+                    <div class="error-message">{{ form.actor.errors }}</div>
+                {% endif %}
+            </div>
+
+            <div class="form-group">
+                <label for="{{ form.comment.id_for_label }}">Комментарий:</label>
+                {{ form.comment }}
+                {% if form.comment.errors %}
+                    <div class="error-message">{{ form.comment.errors }}</div>
+                {% endif %}
+            </div>
+
+            <div class="form-actions">
+                <button type="submit" class="btn-save">Добавить контент</button>
+                <a href="{% url 'home' %}" class="btn-cancel">Отмена</a>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %} 

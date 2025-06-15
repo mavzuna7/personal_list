@@ -1,0 +1,104 @@
+{% extends "app/base.html" %}
+{% block title %}Редактирование {{ content.title }}{% endblock %}
+
+{% block content %}
+<div class="edit-content-page">
+    <div class="edit-content-card">
+        <h1>Редактирование "{{ content.title }}"</h1>
+        <form method="post" enctype="multipart/form-data" class="edit-content-form">
+            {% csrf_token %}
+            
+            <div class="form-group">
+                <label for="id_title">Название</label>
+                <input type="text" name="title" id="id_title" value="{{ content.title }}" required>
+            </div>
+
+            <div class="form-group">
+                <label for="id_description">Описание</label>
+                <textarea name="description" id="id_description" rows="4">{{ content.description }}</textarea>
+            </div>
+
+            <div class="form-group">
+                <label for="id_release_year">Год выпуска</label>
+                <input type="number" name="release_year" id="id_release_year" value="{{ content.release_year }}">
+            </div>
+
+            <div class="form-group">
+                <label for="id_country">Страна</label>
+                <input type="text" name="country" id="id_country" value="{{ content.country }}">
+            </div>
+
+            <div class="form-group">
+                <label for="id_director">Режиссёр</label>
+                <input type="text" name="director" id="id_director" value="{{ content.director }}">
+            </div>
+
+            <div class="form-group">
+                <label for="id_actor">Актёр</label>
+                <input type="text" name="actor" id="id_actor" value="{{ content.actor }}">
+            </div>
+
+            <div class="form-group">
+                <label for="id_rating">Рейтинг</label>
+                <input type="number" name="rating" id="id_rating" step="0.1" min="0" max="10" value="{% if content.rating is not None %}{{ content.rating }}{% endif %}">
+            </div>
+
+            <div class="form-group">
+                <label for="id_comment">Комментарий</label>
+                <textarea name="comment" id="id_comment" rows="3">{{ content.comment }}</textarea>
+            </div>
+
+            <div class="form-group">
+                <label for="id_genre">Жанр</label>
+                <select name="genre" id="id_genre">
+                    <option value="">Выберите жанр</option>
+                    {% for genre in genres %}
+                        <option value="{{ genre.genre_id }}" {% if content.genre.genre_id == genre.genre_id %}selected{% endif %}>
+                            {{ genre.genre_name }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="id_category">Категория</label>
+                <select name="category" id="id_category">
+                    <option value="">Выберите категорию</option>
+                    {% for category in categories %}
+                        <option value="{{ category.category_id }}" {% if content.category.category_id == category.category_id %}selected{% endif %}>
+                            {{ category.category_name }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="id_status">Статус</label>
+                <select name="status" id="id_status">
+                    {% for status_value, status_label in content.STATUS_CHOICES %}
+                        <option value="{{ status_value }}" {% if content.status == status_value %}selected{% endif %}>
+                            {{ status_label }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="id_image">Постер</label>
+                {% if content.image %}
+                    <div class="current-image">
+                        <img src="{{ content.image.url }}" alt="Текущий постер" class="preview-image">
+                        <p>Текущий постер</p>
+                    </div>
+                {% endif %}
+                <input type="file" name="image" id="id_image" accept="image/*">
+            </div>
+
+            <div class="form-actions">
+                <button type="submit" class="btn-save">Сохранить изменения</button>
+                <a href="{% url 'content_detail' content_id=content.content_id %}" class="btn-cancel">Отмена</a>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %} 
