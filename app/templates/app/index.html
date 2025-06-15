@@ -35,12 +35,7 @@
             Добавить контент
         </a>
         
-        <button class="recommendations-button" id="recommendationsButton">
-            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M12 2L15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2z"/>
-            </svg>
-            Рекомендации
-        </button>
+        
     </div>
     
     <div id="filterModal" class="modal" style="display:none;">
@@ -86,36 +81,7 @@
         </div>
     </div>
 
-    <div class="recommendations-dropdown" id="recommendationsDropdown">
-        <div class="recommendations-content">
-            <h3 class="recommendations-title">Рекомендации для вас</h3>
-            <div class="recommendations-list">
-                {% for rec in recommendations %}
-                    <div class="recommendation-item">
-                        <div class="recommendation-poster">
-                            {% if rec.image %}
-                                <img src="{{ rec.image.url }}" alt="{{ rec.description|default:'Постер' }}">
-                            {% else %}
-                                <img src="https://via.placeholder.com/120x180?text=No+Image" alt="Нет постера">
-                            {% endif %}
-                        </div>
-                        <div class="recommendation-info">
-                            <h4 class="recommendation-title">{{ rec.description|truncatechars:30 }}</h4>
-                            <div class="recommendation-meta">
-                                <span class="recommendation-year">{{ rec.release_year }}</span>
-                                <span class="recommendation-genre">{{ rec.genre.genre_name }}</span>
-                            </div>
-                            <div class="recommendation-rating">
-                                ⭐ {{ rec.rating|default:'N/A' }}
-                            </div>
-                        </div>
-                    </div>
-                {% empty %}
-                    <p class="no-recommendations">Нет рекомендаций.</p>
-                {% endfor %}
-            </div>
-        </div>
-    </div>
+    
 </div>
 
 <div class="main-content-grid">
@@ -157,43 +123,7 @@
     </div>
 </div>
 
-<!-- Модальное окно рекомендаций -->
-<div id="recommendationsModal" class="modal" style="display:none;">
-    <div class="modal-overlay" id="closeRecommendationsModal"></div>
-    <div class="modal-content" style="max-width: 600px; width: 98vw;">
-        <div class="modal-header">
-            <h2>Рекомендации для вас</h2>
-            <button class="modal-close" id="closeRecommendationsModalBtn">×</button>
-        </div>
-        <div class="recommendations-list-modal">
-            {% if recommendations %}
-                {% for rec in recommendations %}
-                    <div class="recommendation-item">
-                        <div class="recommendation-poster">
-                            {% if rec.image %}
-                                <img src="{{ rec.image.url }}" alt="{{ rec.title|default:'Постер' }}">
-                            {% else %}
-                                <img src="https://via.placeholder.com/120x180?text=No+Image" alt="Нет постера">
-                            {% endif %}
-                        </div>
-                        <div class="recommendation-info">
-                            <h4 class="recommendation-title">{{ rec.title|truncatechars:30 }}</h4>
-                            <div class="recommendation-meta">
-                                <span class="recommendation-year">{{ rec.release_year }}</span>
-                                <span class="recommendation-genre">{{ rec.genre.genre_name }}</span>
-                            </div>
-                            <div class="recommendation-rating">
-                                ⭐ {{ rec.rating|default:'N/A' }}
-                            </div>
-                        </div>
-                    </div>
-                {% endfor %}
-            {% else %}
-                <p class="no-recommendations">Нет рекомендаций.</p>
-            {% endif %}
-        </div>
-    </div>
-</div>
+
 
 <!-- Пагинация -->
 <div class="pagination">
@@ -242,25 +172,6 @@
 }
 </style>
 
-<script>
-const openBtn = document.getElementById('openFilterModal');
-const modal = document.getElementById('filterModal');
-const closeBtn = document.getElementById('closeFilterModalBtn');
-const overlay = document.getElementById('closeFilterModal');
-if (openBtn && modal && closeBtn && overlay) {
-    openBtn.onclick = () => { modal.style.display = 'block'; document.body.style.overflow = 'hidden'; };
-    closeBtn.onclick = overlay.onclick = () => { modal.style.display = 'none'; document.body.style.overflow = ''; };
-}
 
-// Открытие/закрытие модального окна рекомендаций
-const recBtn = document.getElementById('recommendationsButton');
-const recModal = document.getElementById('recommendationsModal');
-const recCloseBtn = document.getElementById('closeRecommendationsModalBtn');
-const recOverlay = document.getElementById('closeRecommendationsModal');
-if (recBtn && recModal && recCloseBtn && recOverlay) {
-    recBtn.onclick = () => { recModal.style.display = 'flex'; document.body.style.overflow = 'hidden'; };
-    recCloseBtn.onclick = recOverlay.onclick = () => { recModal.style.display = 'none'; document.body.style.overflow = ''; };
-}
-</script>
 {% endblock %}
 

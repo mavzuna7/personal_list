@@ -1,60 +1,33 @@
 document.addEventListener('DOMContentLoaded', function() {
-    const filterButton = document.getElementById('filterButton');
-    const filterDropdown = document.getElementById('filterDropdown');
-    const recommendationsButton = document.getElementById('recommendationsButton');
-    const recommendationsDropdown = document.getElementById('recommendationsDropdown');
-    let isFilterDropdownVisible = false;
-    let isRecommendationsDropdownVisible = false;
+    const openFilterModal = document.getElementById('openFilterModal');
+    const filterModal = document.getElementById('filterModal');
+    const closeFilterModal = document.getElementById('closeFilterModal');
+    const closeFilterModalBtn = document.getElementById('closeFilterModalBtn');
 
-    // Функция для закрытия всех выпадающих окон
-    function closeAllDropdowns() {
-        filterDropdown.classList.remove('show');
-        recommendationsDropdown.classList.remove('show');
-        isFilterDropdownVisible = false;
-        isRecommendationsDropdownVisible = false;
-    }
+    // Открытие модального окна
+    openFilterModal.addEventListener('click', function() {
+        filterModal.style.display = 'block';
+        document.body.style.overflow = 'hidden';
+    });
 
-    // Функция для закрытия выпадающего окна при клике вне его
-    function closeDropdown(event) {
-        if (!filterDropdown.contains(event.target) && 
-            !filterButton.contains(event.target) &&
-            !recommendationsDropdown.contains(event.target) &&
-            !recommendationsButton.contains(event.target)) {
-            closeAllDropdowns();
+    // Закрытие модального окна при клике на оверлей
+    closeFilterModal.addEventListener('click', function() {
+        filterModal.style.display = 'none';
+        document.body.style.overflow = 'auto';
+    });
+
+    // Закрытие модального окна при клике на кнопку закрытия
+    closeFilterModalBtn.addEventListener('click', function() {
+        filterModal.style.display = 'none';
+        document.body.style.overflow = 'auto';
+    });
+
+    // Закрытие модального окна при клике на Escape
+    document.addEventListener('keydown', function(event) {
+        if (event.key === 'Escape' && filterModal.style.display === 'block') {
+            filterModal.style.display = 'none';
+            document.body.style.overflow = 'auto';
         }
-    }
-
-    // Обработчик клика по кнопке фильтров
-    filterButton.addEventListener('click', function(event) {
-        event.stopPropagation();
-        if (isRecommendationsDropdownVisible) {
-            recommendationsDropdown.classList.remove('show');
-            isRecommendationsDropdownVisible = false;
-        }
-        isFilterDropdownVisible = !isFilterDropdownVisible;
-        filterDropdown.classList.toggle('show');
     });
+});
 
-    // Обработчик клика по кнопке рекомендаций
-    recommendationsButton.addEventListener('click', function(event) {
-        event.stopPropagation();
-        if (isFilterDropdownVisible) {
-            filterDropdown.classList.remove('show');
-            isFilterDropdownVisible = false;
-        }
-        isRecommendationsDropdownVisible = !isRecommendationsDropdownVisible;
-        recommendationsDropdown.classList.toggle('show');
-    });
-
-    // Обработчик клика по документу для закрытия выпадающих окон
-    document.addEventListener('click', closeDropdown);
-
-    // Предотвращаем закрытие при клике внутри выпадающих окон
-    filterDropdown.addEventListener('click', function(event) {
-        event.stopPropagation();
-    });
-
-    recommendationsDropdown.addEventListener('click', function(event) {
-        event.stopPropagation();
-    });
-}); 

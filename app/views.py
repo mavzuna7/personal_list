@@ -52,20 +52,16 @@ def home_view(request):
     if q:
         contents = contents.filter(Q(title__icontains=q) | Q(description__icontains=q) | Q(genre__genre_name__icontains=q))
 
-    # Пагинация: 9 карточек на страницу
+    # Пагинация: 10 карточек на страницу
     paginator = Paginator(contents, 9)
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
-
-    # Рекомендации (топ-5 по рейтингу)
-    recommendations = contents.order_by('-rating')[:5]
 
     return render(request, 'app/index.html', {
         'contents': page_obj,
         'genres': genres,
         'years': years,
         'statuses': statuses,
-        'recommendations': recommendations,
         'selected_genre': genre_id,
         'selected_year': year,
         'selected_status': status,

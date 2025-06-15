@@ -262,10 +262,27 @@ button:active {
 
 .content-cards {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
+    grid-template-columns: repeat(4, 1fr);
     gap: 24px;
+    margin-top: 20px;
     text-decoration: none;
 }
+
+@media (max-width: 1500px) {
+    .content-cards {
+        grid-template-columns: repeat(5, 1fr);
+    }
+}
+@media (max-width: 900px) {
+    .content-cards {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+@media (max-width: 600px) {
+    .content-cards {
+        grid-template-columns: 1fr;
+    }
+} 
 
 .card.movie-card, .card.rec-card {
     background: transparent !important;
@@ -1921,4 +1938,5 @@ filter-group select:focus {
     border-radius: 10px;
     box-shadow: 0 2px 8px rgba(102, 126, 234, 0.10);
     margin-bottom: 8px;
-} 
+}
+
