@@ -1,0 +1,12 @@
+{% extends "app/base.html" %}
+{% block title %}Профиль {{ profile_user.username }}{% endblock %}
+{% block content %}
+    <h2>Профиль пользователя {{ profile_user.username }}</h2>
+
+    <div class="profile-info">
+        <p><strong>Имя пользователя:</strong> {{ profile_user.username }}</p>
+        <p><strong>Email:</strong> {{ profile_user.email }}</p>
+        <p><strong>Коллекции:</strong> {{ collections_count }}</p>
+        <p><strong>Элементы контента:</strong> {{ content_count }}</p>
+    </div>
+{% endblock %} 

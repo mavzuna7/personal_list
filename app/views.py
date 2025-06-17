@@ -9,6 +9,12 @@ from django.db.models import Count, Q
 from django.contrib.auth.hashers import make_password
 from django.db import models
 from django.core.paginator import Paginator
+from .services import MovieService
+import requests
+from django.http import JsonResponse
+from django.core.files.base import ContentFile
+from django.core.files.storage import default_storage
+import os
 
 def dashboard_view(request):
     user = request.user
@@ -69,18 +75,7 @@ def home_view(request):
         'page_obj': page_obj,
     })
 
-def profile_view(request):
-    user = request.user
-    collections_count = Collection.objects.filter(user=user).count()
-    content_count = Content.objects.filter(user=user).count()
 
-    context = {
-        'user': user,
-        'collections_count': collections_count,
-        'content_count': content_count,
-    }
-
-    return render(request, 'app/profile.html', context)
 
 def create_user(username, email, password_hash):
     if User.objects.filter(username=username).exists():
@@ -167,10 +162,9 @@ def collections_view(request):
     })
 
 
-@login_required
 def collection_detail(request, collection_id):
     collection = get_object_or_404(Collection, collection_id=collection_id)
-    contents = Content.objects.filter(collection=collection, user=request.user)
+    contents = Content.objects.filter(collection=collection)  # Показываем все элементы коллекции
     return render(request, 'app/collection_detail.html', {
         'collection': collection,
         'contents': contents
@@ -278,3 +272,38 @@ def delete_collection(request, collection_id):
     else:
         messages.error(request, 'У вас нет прав для удаления этой коллекции')
         return redirect('collection_detail', collection_id=collection_id)
+
+@login_required
+def search_content(request):
+    """API endpoint для поиска информации о фильме или сериале"""
+    if request.method == 'GET':
+        title = request.GET.get('title', '')
+        content_type = request.GET.get('type', 'movie')
+        
+        if not title:
+            return JsonResponse({'error': 'Название не указано'}, status=400)
+
+        movie_service = MovieService()
+        content_info = movie_service.search_content(title, content_type)
+
+        if not content_info:
+            return JsonResponse({'error': 'Контент не найден'}, status=404)
+
+        # Если есть URL постера, скачиваем его
+        if content_info.get('poster_url'):
+            try:
+                response = requests.get(content_info['poster_url'])
+                if response.status_code == 200:
+                    # Создаем временный файл
+                    temp_file = ContentFile(response.content)
+                    file_name = f"content_posters/{os.path.basename(content_info['poster_url'])}"
+                    
+                    # Сохраняем файл
+                    file_path = default_storage.save(file_name, temp_file)
+                    content_info['poster_path'] = file_path
+            except Exception as e:
+                print(f"Ошибка при скачивании постера: {e}")
+
+        return JsonResponse(content_info)
+
+    return JsonResponse({'error': 'Метод не поддерживается'}, status=405)

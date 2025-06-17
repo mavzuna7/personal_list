@@ -111,11 +111,42 @@ class CollectionForm(forms.ModelForm):
         fields = ['collection_name']
 
 class ContentForm(forms.ModelForm):
+    search_title = forms.CharField(
+        required=False,
+        label='Поиск фильма или сериала',
+        widget=forms.TextInput(attrs={
+            'placeholder': 'Введите название для поиска',
+            'class': 'form-control',
+            'id': 'content-search'
+        })
+    )
+    content_type = forms.ChoiceField(
+        required=False,
+        label='Тип контента',
+        choices=[
+            ('movie', 'Фильм'),
+            ('tv', 'Сериал')
+        ],
+        widget=forms.RadioSelect(attrs={
+            'class': 'form-check-input',
+            'id': 'content-type'
+        })
+    )
+
     class Meta:
         model = Content
         fields = ['title', 'genre', 'category', 'image', 'status', 'rating', 'comment', 'release_year', 'description', 'country', 'director', 'actor']
         widgets = {
-            'description': forms.Textarea(attrs={'rows': 4}),
-            'comment': forms.Textarea(attrs={'rows': 3}),
-            'image': forms.FileInput(attrs={'accept': 'image/*'}),
+            'description': forms.Textarea(attrs={'rows': 4, 'class': 'form-control'}),
+            'comment': forms.Textarea(attrs={'rows': 3, 'class': 'form-control'}),
+            'image': forms.FileInput(attrs={'accept': 'image/*', 'class': 'form-control'}),
+            'title': forms.TextInput(attrs={'class': 'form-control'}),
+            'genre': forms.Select(attrs={'class': 'form-control'}),
+            'category': forms.Select(attrs={'class': 'form-control'}),
+            'status': forms.Select(attrs={'class': 'form-control'}),
+            'rating': forms.NumberInput(attrs={'class': 'form-control', 'step': '0.1', 'min': '0', 'max': '10'}),
+            'release_year': forms.NumberInput(attrs={'class': 'form-control'}),
+            'country': forms.TextInput(attrs={'class': 'form-control'}),
+            'director': forms.TextInput(attrs={'class': 'form-control'}),
+            'actor': forms.TextInput(attrs={'class': 'form-control'}),
         }

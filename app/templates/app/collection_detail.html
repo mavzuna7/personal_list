@@ -5,6 +5,17 @@
 <div class="collection-detail-page">
     <div class="collection-header">
         <h1>{{ collection.name }}</h1>
+        <button onclick="copyCollectionLink()" class="btn-share">Поделиться</button>
+        <script>
+        function copyCollectionLink() {
+            const url = window.location.href;
+            navigator.clipboard.writeText(url).then(function() {
+                alert('Ссылка на коллекцию скопирована!');
+            }, function(err) {
+                alert('Ошибка копирования: ' + err);
+            });
+        }
+        </script>
         <div class="collection-actions">
             <a href="{% url 'edit_content' content_id=collection.collection_id %}" class="btn-edit">
                 <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
