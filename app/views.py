@@ -16,6 +16,7 @@ from django.core.files.base import ContentFile
 from django.core.files.storage import default_storage
 import os
 from django.views.decorators.http import require_POST
+from django.conf import settings
 
 def dashboard_view(request):
     user = request.user
@@ -40,8 +41,12 @@ def home_view(request):
     if not request.user.is_authenticated:
         return render(request, 'app/welcome.html')
     contents = Content.objects.filter(user=request.user)
-    genres = Genre.objects.all()
-    years = Content.objects.values_list('release_year', flat=True).distinct().order_by('-release_year')
+    # Только уникальные жанры пользователя (без пустых)
+    genres = contents.values_list('genre', flat=True).distinct().order_by('genre')
+    genres = [g for g in genres if g]  # убираем пустые
+    # Только уникальные года пользователя (без пустых и невалидных)
+    years = contents.values_list('release_year', flat=True).distinct().order_by('-release_year')
+    years = [y for y in years if y and isinstance(y, int) and 1800 < y < 2100]
     statuses = Content.STATUS_CHOICES
 
     # Фильтры
@@ -51,13 +56,13 @@ def home_view(request):
     q = request.GET.get('q')
 
     if genre_id:
-        contents = contents.filter(genre_id=genre_id)
+        contents = contents.filter(genre=genre_id)
     if year:
         contents = contents.filter(release_year=year)
     if status:
         contents = contents.filter(status=status)
     if q:
-        contents = contents.filter(Q(title__icontains=q) | Q(description__icontains=q) | Q(genre__genre_name__icontains=q))
+        contents = contents.filter(Q(title__icontains=q) | Q(description__icontains=q) | Q(genre__icontains=q))
 
     # Пагинация: 10 карточек на страницу
     paginator = Paginator(contents, 9)
@@ -184,6 +189,20 @@ def add_content(request):
         if form.is_valid():
             content = form.save(commit=False)
             content.user = request.user
+            # Если пользователь не выбрал файл, а есть poster_path — подставить его
+            poster_path = request.POST.get('poster_path')
+            if not request.FILES.get('image') and poster_path:
+                from django.core.files import File
+                try:
+                    # Если путь относительный, делаем абсолютный
+                    if not os.path.isabs(poster_path):
+                        abs_path = os.path.join(settings.MEDIA_ROOT, poster_path)
+                    else:
+                        abs_path = poster_path
+                    with open(abs_path, 'rb') as f:
+                        content.image.save(os.path.basename(abs_path), File(f), save=False)
+                except Exception as e:
+                    print(f'Ошибка при автозаполнении постера: {e}')
             content.save()
             messages.success(request, 'Контент успешно добавлен!')
             return redirect('content_detail', content_id=content.content_id)
@@ -207,8 +226,7 @@ def edit_content(request, content_id):
         actor = request.POST.get('actor')
         rating = request.POST.get('rating')
         comment = request.POST.get('comment')
-        genre_id = request.POST.get('genre')
-        category_id = request.POST.get('category')
+        genre_value = request.POST.get('genre')
         status = request.POST.get('status')
 
         # Обновляем объект
@@ -227,19 +245,12 @@ def edit_content(request, content_id):
                 content.rating = None
         content.comment = comment
         content.status = status
-
-        # Обновляем связи
-        if genre_id:
-            content.genre = Genre.objects.get(genre_id=genre_id)
-        if category_id:
-            content.category = Category.objects.get(category_id=category_id)
-
+        content.genre = genre_value
         # Обработка изображения
         if 'image' in request.FILES:
             if content.image:
                 content.image.delete()
             content.image = request.FILES['image']
-
         content.save()
         messages.success(request, 'Изменения успешно сохранены')
         return redirect('content_detail', content_id=content.content_id)
@@ -305,17 +316,10 @@ def search_content(request):
             except Exception as e:
                 print(f"Ошибка при скачивании постера: {e}")
 
-        # Автозаполнение жанра
+        # Автозаполнение жанра (теперь строка)
         genres = content_info.get('genres', [])
-        genre_id = None
-        genre_name = None
-        if genres:
-            # Берём первый жанр из списка TMDB
-            genre_name = genres[0]
-            genre_obj, created = Genre.objects.get_or_create(genre_name=genre_name)
-            genre_id = genre_obj.genre_id
-        content_info['genre_id'] = genre_id
-        content_info['genre_name'] = genre_name
+        genre = genres[0] if genres else ''
+        content_info['genre'] = genre
 
         return JsonResponse(content_info)
 

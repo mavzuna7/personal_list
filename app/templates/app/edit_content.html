@@ -50,14 +50,7 @@
 
             <div class="form-group">
                 <label for="id_genre">Жанр</label>
-                <select name="genre" id="id_genre">
-                    <option value="">Выберите жанр</option>
-                    {% for genre in genres %}
-                        <option value="{{ genre.genre_id }}" {% if content.genre.genre_id == genre.genre_id %}selected{% endif %}>
-                            {{ genre.genre_name }}
-                        </option>
-                    {% endfor %}
-                </select>
+                <input type="text" name="genre" id="id_genre" value="{{ content.genre }}" class="form-control" placeholder="Жанр">
             </div>
 
             <div class="form-group">

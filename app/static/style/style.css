@@ -1712,21 +1712,25 @@ filter-group select:focus {
     transform: translateY(-2px) scale(1.03);
 }
 .add-content-form .btn-cancel {
-    background: #e2e8f0;
-    color: #667eea;
-    border: none;
-    border-radius: 12px;
-    padding: 14px 32px;
-    font-size: 1.1em;
-    font-weight: 700;
-    cursor: pointer;
-    transition: background 0.2s, color 0.2s;
+    display: block;
+    width: 100%;
+    padding: 14px;
+    background: #fff;
+    color: #764ba2;
+    border: 2px solid #764ba2;
+    border-radius: 10px;
+    font-size: 16px;
+    font-weight: 600;
+    text-align: center;
     text-decoration: none;
-    display: inline-block;
+    margin-top: 10px;
+    transition: all 0.2s;
+    box-sizing: border-box;
 }
 .add-content-form .btn-cancel:hover {
-    background: #d1d5db;
-    color: #4a5568;
+    background: linear-gradient(135deg, #e0e7ff 0%, #a5b4fc 100%);
+    color: #fff;
+    border-color: #667eea;
 }
 @media (max-width: 900px) {
     .add-content-page {
@@ -1938,5 +1942,36 @@ filter-group select:focus {
     border-radius: 10px;
     box-shadow: 0 2px 8px rgba(102, 126, 234, 0.10);
     margin-bottom: 8px;
+}
+
+/* Custom styles for add content form fields */
+.add-content-form select,
+.add-content-form input[type="number"],
+.add-content-form textarea {
+    width: 100%;
+    padding: 12px 15px;
+    border: 2px solid #e1e1e1;
+    border-radius: 10px;
+    font-size: 15px;
+    transition: all 0.3s ease;
+    background: #f8f9fa;
+    margin-bottom: 8px;
+}
+.add-content-form select:focus,
+.add-content-form input[type="number"]:focus,
+.add-content-form textarea:focus {
+    border-color: #667eea;
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+    background: #fff;
+}
+.add-content-form textarea {
+    min-height: 90px;
+    resize: vertical;
+}
+.add-content-form label {
+    font-weight: 500;
+    color: #4a4a4a;
+    margin-bottom: 6px;
 }
 

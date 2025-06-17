@@ -5,7 +5,7 @@
 {% block content %}
 <div class="container mt-4">
     <h2>Добавить новый контент</h2>
-    <form method="post" enctype="multipart/form-data" class="mt-4">
+    <form method="post" enctype="multipart/form-data" class="mt-4 add-content-form">
         {% csrf_token %}
         
         <div class="row mb-4">
@@ -88,78 +88,14 @@
 
         <div class="mt-4">
             <button type="submit" class="btn btn-primary">Сохранить</button>
-            <a href="{% url 'home' %}" class="btn btn-secondary">Отмена</a>
+            <a href="{% url 'home' %}" class="btn-cancel">Отмена</a>
         </div>
     </form>
 </div>
 
 {% block extra_js %}
 <script>
-document.addEventListener('DOMContentLoaded', function() {
-    const searchButton = document.getElementById('search-content');
-    const searchInput = document.getElementById('content-search');
-    const contentTypeInputs = document.querySelectorAll('input[name="content_type"]');
-    
-    searchButton.addEventListener('click', function() {
-        const title = searchInput.value.trim();
-        if (!title) {
-            alert('Пожалуйста, введите название фильма или сериала');
-            return;
-        }
-
-        // Получаем выбранный тип контента
-        let contentType = 'movie';
-        contentTypeInputs.forEach(input => {
-            if (input.checked) {
-                contentType = input.value;
-            }
-        });
-
-        // Показываем индикатор загрузки
-        searchButton.disabled = true;
-        searchButton.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Поиск...';
-
-        // Отправляем запрос к API
-        fetch(`/api/search-content/?title=${encodeURIComponent(title)}&type=${contentType}`)
-            .then(response => response.json())
-            .then(data => {
-                if (data.error) {
-                    alert(data.error);
-                    return;
-                }
-
-                // Заполняем форму полученными данными
-                document.getElementById('id_title').value = data.title || '';
-                document.getElementById('id_description').value = data.description || '';
-                document.getElementById('id_release_year').value = data.release_year || '';
-                document.getElementById('id_country').value = data.country || '';
-                document.getElementById('id_director').value = data.director || '';
-                document.getElementById('id_actor').value = data.actors || '';
-                
-                if (data.rating) {
-                    document.getElementById('id_rating').value = parseFloat(data.rating);
-                }
-
-                // Если есть постер, показываем его
-                if (data.poster_path) {
-                    const posterPreview = document.getElementById('poster-preview');
-                    posterPreview.innerHTML = `
-                        <img src="${data.poster_path}" class="img-thumbnail" style="max-height: 200px;">
-                        <input type="hidden" name="poster_path" value="${data.poster_path}">
-                    `;
-                }
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                alert('Произошла ошибка при поиске контента');
-            })
-            .finally(() => {
-                // Восстанавливаем кнопку
-                searchButton.disabled = false;
-                searchButton.innerHTML = 'Поиск';
-            });
-    });
-});
+// ... удалён дублирующийся JS-код поиска ...
 </script>
 {% endblock %}
 {% endblock %} 

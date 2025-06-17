@@ -29,8 +29,8 @@ class CollectionAdmin(admin.ModelAdmin):
 
 @admin.register(Content)
 class ContentAdmin(admin.ModelAdmin):
-    list_display = ('content_id', 'title', 'genre', 'category', 'release_year', 'rating')
-    list_filter = ('genre', 'category', 'release_year')
+    list_display = ('content_id', 'title', 'genre', 'release_year', 'rating')
+    list_filter = ('genre', 'release_year')
     search_fields = ('title', 'description', 'country', 'director', 'actor')
     readonly_fields = ('created_at', 'updated_at')
 

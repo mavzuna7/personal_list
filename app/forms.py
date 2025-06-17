@@ -132,6 +132,11 @@ class ContentForm(forms.ModelForm):
             'id': 'content-type'
         })
     )
+    genre = forms.CharField(
+        required=False,
+        label='Жанр',
+        widget=forms.TextInput(attrs={'class': 'form-control', 'id': 'id_genre', 'placeholder': 'Жанр'})
+    )
 
     class Meta:
         model = Content
@@ -141,7 +146,6 @@ class ContentForm(forms.ModelForm):
             'comment': forms.Textarea(attrs={'rows': 3, 'class': 'form-control'}),
             'image': forms.FileInput(attrs={'accept': 'image/*', 'class': 'form-control'}),
             'title': forms.TextInput(attrs={'class': 'form-control'}),
-            'genre': forms.Select(attrs={'class': 'form-control'}),
             'status': forms.Select(attrs={'class': 'form-control'}),
             'rating': forms.NumberInput(attrs={'class': 'form-control', 'step': '0.1', 'min': '0', 'max': '10'}),
             'release_year': forms.NumberInput(attrs={'class': 'form-control'}),

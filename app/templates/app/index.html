@@ -53,7 +53,7 @@
                     <select name="genre">
                         <option value="">Все жанры</option>
                         {% for genre in genres %}
-                            <option value="{{ genre.pk }}" {% if genre.pk|stringformat:'s' == selected_genre %}selected{% endif %}>{{ genre.genre_name }}</option>
+                            <option value="{{ genre }}" {% if genre == selected_genre %}selected{% endif %}>{{ genre }}</option>
                         {% endfor %}
                     </select>
                 </div>

@@ -69,9 +69,8 @@ class Collection(models.Model):
 class Content(models.Model):
     content_id = models.AutoField(primary_key=True, verbose_name='ID контента')
     title = models.CharField(max_length=255, null=True, blank=True, verbose_name='Название')
-    genre = models.ForeignKey(Genre, on_delete=models.SET_NULL, null=True, verbose_name='Жанр')
+    genre = models.CharField(max_length=100, null=True, blank=True, verbose_name='Жанр')
     collection = models.ForeignKey(Collection, on_delete=models.SET_NULL, null=True, blank=True, verbose_name='Коллекция')
-    category = models.ForeignKey(Category, on_delete=models.SET_NULL, null=True, verbose_name='Категория')
     image = models.ImageField(upload_to='content_posters/', null=True, blank=True, verbose_name='Постер')
     user = models.ForeignKey(User, on_delete=models.CASCADE, null=True, verbose_name='Пользователь')
 
@@ -87,10 +86,6 @@ class Content(models.Model):
     rating = models.DecimalField(max_digits=3, decimal_places=1, null=True, blank=True, verbose_name='Оценка')
     comment = models.TextField(null=True, blank=True, verbose_name='Комментарий')
     
-
-    
-    
-
     release_year = models.IntegerField(verbose_name='Год выпуска')
     description = models.TextField(null=True, blank=True, verbose_name='Описание')
     country = models.CharField(max_length=100, null=True, blank=True, verbose_name='Страна')
