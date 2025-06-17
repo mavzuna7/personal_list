@@ -394,19 +394,16 @@ def recommendations_view(request):
 @login_required
 @require_POST
 def add_to_collection(request):
-    collection_id = request.POST.get('collection_id')
     content_id = request.POST.get('content_id')
-    collection = get_object_or_404(Collection, collection_id=collection_id, user=request.user)
+    status = request.POST.get('status')
     original_content = get_object_or_404(Content, content_id=content_id)
 
     Content.objects.create(
         title=original_content.title,
         genre=original_content.genre,
-        collection=collection,
-        category=original_content.category,
         image=original_content.image,
         user=request.user,
-        status=collection.status,
+        status=status,
         rating=original_content.rating,
         comment=original_content.comment,
         release_year=original_content.release_year,
