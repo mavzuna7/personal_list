@@ -15,6 +15,7 @@ from django.http import JsonResponse
 from django.core.files.base import ContentFile
 from django.core.files.storage import default_storage
 import os
+from django.views.decorators.http import require_POST
 
 def dashboard_view(request):
     user = request.user
@@ -304,6 +305,90 @@ def search_content(request):
             except Exception as e:
                 print(f"Ошибка при скачивании постера: {e}")
 
+        # Автозаполнение жанра
+        genres = content_info.get('genres', [])
+        genre_id = None
+        genre_name = None
+        if genres:
+            # Берём первый жанр из списка TMDB
+            genre_name = genres[0]
+            genre_obj, created = Genre.objects.get_or_create(genre_name=genre_name)
+            genre_id = genre_obj.genre_id
+        content_info['genre_id'] = genre_id
+        content_info['genre_name'] = genre_name
+
         return JsonResponse(content_info)
 
     return JsonResponse({'error': 'Метод не поддерживается'}, status=405)
+
+def user_collections_view(request, username):
+    user = get_object_or_404(User, username=username)
+    contents = Content.objects.filter(user=user).order_by('-rating', 'title')
+    user_collections = None
+    if request.user.is_authenticated:
+        user_collections = Collection.objects.filter(user=request.user)
+    return render(request, 'app/user_content.html', {
+        'contents': contents,
+        'profile_user': user,
+        'user_collections': user_collections
+    })
+
+def recommendations_view(request):
+    user = request.user
+    # Найти топ-2 жанра, которые пользователь чаще всего смотрит (completed или watching)
+    top_genres = (
+        Content.objects.filter(user=user, status__in=["completed", "watching"])
+        .values('genre')
+        .annotate(count=Count('genre'))
+        .order_by('-count')[:2]
+    )
+    genre_ids = [g['genre'] for g in top_genres if g['genre']]
+    # Найти контент этих жанров, которого нет у пользователя
+    recommendations = (
+        Content.objects.filter(genre_id__in=genre_ids)
+        .exclude(user=user)
+        .order_by('-rating')[:10]
+    )
+    data = [
+        {
+            'title': c.title,
+            'genre': c.genre.genre_name if c.genre else '',
+            'release_year': c.release_year,
+            'rating': str(c.rating) if c.rating else '',
+            'image': c.image.url if c.image else '',
+            'content_id': c.content_id,
+        }
+        for c in recommendations
+    ]
+    return JsonResponse({'recommendations': data})
+
+@login_required
+@require_POST
+def add_to_collection(request):
+    collection_id = request.POST.get('collection_id')
+    content_id = request.POST.get('content_id')
+    collection = get_object_or_404(Collection, collection_id=collection_id, user=request.user)
+    original_content = get_object_or_404(Content, content_id=content_id)
+
+    Content.objects.create(
+        title=original_content.title,
+        genre=original_content.genre,
+        collection=collection,
+        category=original_content.category,
+        image=original_content.image,
+        user=request.user,
+        status=collection.status,
+        rating=original_content.rating,
+        comment=original_content.comment,
+        release_year=original_content.release_year,
+        description=original_content.description,
+        country=original_content.country,
+        director=original_content.director,
+        actor=original_content.actor
+    )
+    # Редирект с параметром для уведомления
+    referer = request.META.get('HTTP_REFERER', '/')
+    if '?' in referer:
+        return redirect(referer + '&added=1')
+    else:
+        return redirect(referer + '?added=1')

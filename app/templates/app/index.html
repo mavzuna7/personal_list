@@ -26,7 +26,6 @@
                 <span class="active-filters-dot"></span>
             {% endif %}
         </button>
-        
         <a href="{% url 'add_content' %}" class="add-content-button">
             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                 <line x1="12" y1="5" x2="12" y2="19"></line>
@@ -34,8 +33,11 @@
             </svg>
             Добавить контент
         </a>
-        
-        
+        {% if user.is_authenticated %}
+            <button onclick="copyMyCollectionsLink()" type="button" class="add-content-button">Поделиться</button>
+            <button id="openRecommendations" type="button" class="recommendations-button">Рекомендации</button>
+            <div id="copy-notification" class="copy-notification">Ссылка на ваши коллекции скопирована!</div>
+        {% endif %}
     </div>
     
     <div id="filterModal" class="modal" style="display:none;">
@@ -81,7 +83,20 @@
         </div>
     </div>
 
-    
+    <!-- Recommendations Modal -->
+    <div id="recommendationsModal" class="modal" style="display:none;">
+        <div class="modal-overlay" id="closeRecommendationsModal"></div>
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Рекомендации</h2>
+                <button class="modal-close" id="closeRecommendationsModalBtn">×</button>
+            </div>
+            <div id="recommendationsList" class="recommendations-list">
+                <!-- Recommendations will be loaded here -->
+            </div>
+        </div>
+    </div>
+
 </div>
 
 <div class="main-content-grid">
@@ -170,8 +185,236 @@
     color: #fff;
     cursor: default;
 }
+.copy-notification {
+    display: none;
+    position: fixed;
+    left: 50%;
+    top: 58%;
+    transform: translate(-50%, -50%);
+    background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+    color: #fff;
+    padding: 18px 32px;
+    border-radius: 16px;
+    font-size: 1.15em;
+    font-weight: 600;
+    box-shadow: 0 8px 32px rgba(102,126,234,0.15);
+    z-index: 9999;
+    opacity: 0;
+    transition: opacity 0.3s;
+}
+
+/* Modal Styles */
+.modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 1000;
+}
+
+.modal-overlay {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+}
+
+.modal-content {
+    position: relative;
+    background: white;
+    width: 90%;
+    max-width: 600px;
+    margin: 50px auto;
+    border-radius: 12px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+    z-index: 1001;
+}
+
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 16px 24px;
+    border-bottom: 1px solid #eee;
+}
+
+.modal-header h2 {
+    margin: 0;
+    font-size: 1.5rem;
+    color: #2d3748;
+}
+
+.modal-close {
+    background: none;
+    border: none;
+    font-size: 24px;
+    cursor: pointer;
+    color: #718096;
+    padding: 0;
+    line-height: 1;
+}
+
+.modal-close:hover {
+    color: #2d3748;
+}
+
+.recommendations-list {
+    padding: 24px;
+    max-height: 70vh;
+    overflow-y: auto;
+}
+
+.recommendations-list .content-card {
+    background: #f7fafc;
+    border-radius: 8px;
+    padding: 16px;
+    margin-bottom: 16px;
+}
+
+.recommendations-list .content-card:last-child {
+    margin-bottom: 0;
+}
+
+.recommendations-list h3 {
+    margin: 0 0 8px 0;
+    color: #2d3748;
+    font-size: 1.2rem;
+}
+
+.recommendations-list p {
+    margin: 0;
+    color: #4a5568;
+    font-size: 0.95rem;
+}
+
+.recommendations-button {
+    background: #667eea;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    padding: 8px 16px;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background-color 0.2s;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+}
+
+@media (max-width: 640px) {
+    .modal-content {
+        width: 95%;
+        margin: 20px auto;
+    }
+    
+    .modal-header {
+        padding: 12px 16px;
+    }
+    
+    .recommendations-list {
+        padding: 16px;
+    }
+}
 </style>
 
+{% if user.is_authenticated %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Existing filter modal code
+    const filterModal = document.getElementById('filterModal');
+    const openFilterBtn = document.getElementById('openFilterModal');
+    const closeFilterBtn = document.getElementById('closeFilterModalBtn');
+    const closeFilterOverlay = document.getElementById('closeFilterModal');
+
+    if (openFilterBtn && filterModal) {
+        openFilterBtn.onclick = function() {
+            filterModal.style.display = 'block';
+            document.body.style.overflow = 'hidden';
+        }
+    }
+
+    if (closeFilterBtn) {
+        closeFilterBtn.onclick = function() {
+            filterModal.style.display = 'none';
+            document.body.style.overflow = 'auto';
+        }
+    }
+
+    if (closeFilterOverlay) {
+        closeFilterOverlay.onclick = function(event) {
+            if (event.target === closeFilterOverlay) {
+                filterModal.style.display = 'none';
+                document.body.style.overflow = 'auto';
+            }
+        }
+    }
+
+    // Recommendations modal code
+    const recommendationsModal = document.getElementById('recommendationsModal');
+    const openRecommendationsBtn = document.getElementById('openRecommendations');
+    const closeRecommendationsBtn = document.getElementById('closeRecommendationsModalBtn');
+    const closeRecommendationsOverlay = document.getElementById('closeRecommendationsModal');
+
+    if (openRecommendationsBtn && recommendationsModal) {
+        openRecommendationsBtn.onclick = function() {
+            recommendationsModal.style.display = 'block';
+            document.body.style.overflow = 'hidden';
+        }
+    }
+
+    if (closeRecommendationsBtn) {
+        closeRecommendationsBtn.onclick = function() {
+            recommendationsModal.style.display = 'none';
+            document.body.style.overflow = 'auto';
+        }
+    }
+
+    if (closeRecommendationsOverlay) {
+        closeRecommendationsOverlay.onclick = function(event) {
+            if (event.target === closeRecommendationsOverlay) {
+                recommendationsModal.style.display = 'none';
+                document.body.style.overflow = 'auto';
+            }
+        }
+    }
+
+    // Close modals on Escape key
+    window.addEventListener('keydown', function(event) {
+        if (event.key === 'Escape') {
+            if (filterModal.style.display === 'block') {
+                filterModal.style.display = 'none';
+                document.body.style.overflow = 'auto';
+            }
+            if (recommendationsModal.style.display === 'block') {
+                recommendationsModal.style.display = 'none';
+                document.body.style.overflow = 'auto';
+            }
+        }
+    });
+});
+
+// Share functionality
+function copyMyCollectionsLink() {
+    const url = window.location.origin + '/user/' + '{{ user.username }}' + '/collections/';
+    navigator.clipboard.writeText(url).then(function() {
+        const notification = document.getElementById('copy-notification');
+        notification.style.display = 'block';
+        notification.style.opacity = '1';
+        
+        setTimeout(function() {
+            notification.style.opacity = '0';
+            setTimeout(function() {
+                notification.style.display = 'none';
+            }, 300);
+        }, 2000);
+    }).catch(function(err) {
+        alert('Ошибка копирования: ' + err);
+    });
+}
+</script>
+{% endif %}
 
 {% endblock %}
 

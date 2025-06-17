@@ -1,0 +1,49 @@
+{% extends "app/base.html" %}
+{% block title %}Коллекции {{ profile_user.username }}{% endblock %}
+{% block content %}
+<h2>Коллекции пользователя {{ profile_user.username }}</h2>
+
+{% if collections_with_contents %}
+    {% for item in collections_with_contents %}
+        <div class="collection-block">
+            <h3>{{ item.collection.collection_name }}</h3>
+            <div class="collection-contents">
+                {% if item.contents %}
+                    {% for content in item.contents %}
+                        <div class="content-card">
+                            {% if content.image %}
+                                <img src="{{ content.image.url }}" alt="{{ content.title }}" class="content-image">
+                            {% else %}
+                                <div class="content-image-placeholder">
+                                    <span>Нет постера</span>
+                                </div>
+                            {% endif %}
+                            <div class="content-info">
+                                <h4>{{ content.title }}</h4>
+                                <div class="content-meta">
+                                    {% if content.release_year %}
+                                        <span>Год: {{ content.release_year }}</span>
+                                    {% endif %}
+                                    {% if content.genre %}
+                                        <span>Жанр: {{ content.genre.genre_name }}</span>
+                                    {% endif %}
+                                    {% if content.rating %}
+                                        <span>Рейтинг: {{ content.rating }}</span>
+                                    {% endif %}
+                                </div>
+                                <div class="content-actions">
+                                    <a href="{% url 'content_detail' content_id=content.content_id %}" class="btn-view">Подробнее</a>
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                {% else %}
+                    <p class="no-contents">В этой коллекции пока нет контента</p>
+                {% endif %}
+            </div>
+        </div>
+    {% endfor %}
+{% else %}
+    <p>У пользователя нет коллекций.</p>
+{% endif %}
+{% endblock %} 

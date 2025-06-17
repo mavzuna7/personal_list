@@ -48,7 +48,15 @@ class Category(models.Model):
 class Collection(models.Model):
     collection_id = models.AutoField(primary_key=True, verbose_name='ID коллекции')
     collection_name = models.CharField(max_length=100, verbose_name='Название коллекции')
-   
+    user = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name='Пользователь', null=True)
+    STATUS_CHOICES = [
+        ('completed', 'Просмотрено'),
+        ('watching', 'Смотрю'),
+        ('planned', 'Запланировано'),
+        ('paused', 'На паузе'),
+        ('dropped', 'Брошено'),
+    ]
+    status = models.CharField(max_length=50, choices=STATUS_CHOICES, verbose_name='Статус', default='completed')
 
     class Meta:
         verbose_name = "Коллекция"

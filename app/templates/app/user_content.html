@@ -1,0 +1,195 @@
+{% extends "app/base.html" %}
+{% block title %}Контент пользователя {{ profile_user.username }}{% endblock %}
+
+{% block content %}
+{% if request.GET.added %}
+<div id="success-notification" class="success-notification">
+    Контент успешно добавлен в коллекцию!
+</div>
+{% endif %}
+<div class="content-container">
+    <h1 class="page-title">Контент пользователя {{ profile_user.username }}</h1>
+
+    <div class="collection-content-grid">
+        {% for content in contents %}
+            <div class="collection-content-card">
+                {% if content.image %}
+                    <img src="{{ content.image.url }}" alt="{{ content.title }}" class="collection-content-image">
+                {% endif %}
+                <div class="collection-content-info">
+                    <h3>{{ content.title }}</h3>
+                    <p>{{ content.description|truncatechars:80 }}</p>
+                    <div class="collection-content-meta">
+                        <span>{{ content.release_year }}</span>
+                        <span>{{ content.genre.genre_name }}</span>
+                    </div>
+                </div>
+                {% if user.is_authenticated and user != profile_user %}
+                <button class="add-btn" data-content-id="{{ content.content_id }}" data-content-title="{{ content.title|escapejs }}" onclick="openAddModal(this)">Добавить</button>
+                {% endif %}
+            </div>
+        {% empty %}
+            <p class="no-content">У пользователя пока нет добавленного контента</p>
+        {% endfor %}
+    </div>
+</div>
+
+<!-- Модальное окно выбора коллекции -->
+<div id="addModal" class="modal" style="display:none;">
+  <div class="modal-content">
+    <span class="close" onclick="closeAddModal()">&times;</span>
+    <h2>Добавить "<span id="modalContentTitle"></span>" в коллекцию</h2>
+    <form id="addToCollectionForm" method="post" action="{% url 'add_to_collection' %}">
+      {% csrf_token %}
+      <input type="hidden" name="content_id" id="modalContentId">
+      <label for="collectionSelect" class="select-collection-label">Выберите коллекцию:</label>
+      <select name="collection_id" id="collectionSelect" required class="select-collection">
+        {% for collection in user_collections %}
+          <option value="{{ collection.collection_id }}">{{ collection.collection_name }}</option>
+        {% endfor %}
+      </select>
+      <button type="submit" class="modal-add-btn">Добавить</button>
+    </form>
+  </div>
+</div>
+
+<script>
+function openAddModal(btn) {
+    document.getElementById('addModal').style.display = 'block';
+    document.getElementById('modalContentId').value = btn.getAttribute('data-content-id');
+    document.getElementById('modalContentTitle').textContent = btn.getAttribute('data-content-title');
+}
+function closeAddModal() {
+    document.getElementById('addModal').style.display = 'none';
+}
+window.onclick = function(event) {
+    var modal = document.getElementById('addModal');
+    if (event.target == modal) {
+        closeAddModal();
+    }
+}
+window.addEventListener('DOMContentLoaded', function() {
+    var notif = document.getElementById('success-notification');
+    if (notif) {
+        setTimeout(function() {
+            notif.style.opacity = '0';
+            setTimeout(function() { notif.style.display = 'none'; }, 400);
+        }, 2000);
+    }
+});
+</script>
+
+<style>
+.add-btn {
+    margin: 12px 0 0 0;
+    padding: 8px 18px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    font-size: 1em;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s, box-shadow 0.2s;
+    box-shadow: 0 2px 8px rgba(102, 126, 234, 0.10);
+}
+.add-btn:hover {
+    background: linear-gradient(135deg, #4f46e5 0%, #a78bfa 100%);
+}
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0,0,0,0.3);
+}
+.modal-content {
+    background-color: #fff;
+    margin: 8% auto;
+    padding: 30px 24px 24px 24px;
+    border: 1px solid #888;
+    width: 100%;
+    max-width: 400px;
+    border-radius: 16px;
+    box-shadow: 0 8px 32px rgba(102, 126, 234, 0.15);
+    position: relative;
+}
+.close {
+    color: #aaa;
+    position: absolute;
+    right: 18px;
+    top: 12px;
+    font-size: 28px;
+    font-weight: bold;
+    cursor: pointer;
+}
+.close:hover, .close:focus {
+    color: #333;
+    text-decoration: none;
+    cursor: pointer;
+}
+.modal-add-btn {
+    margin-top: 18px;
+    padding: 8px 18px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    font-size: 1em;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s, box-shadow 0.2s;
+    box-shadow: 0 2px 8px rgba(102, 126, 234, 0.10);
+}
+.modal-add-btn:hover {
+    background: linear-gradient(135deg, #4f46e5 0%, #a78bfa 100%);
+}
+.success-notification {
+    position: fixed;
+    top: 60px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: #fff;
+    padding: 18px 36px;
+    border-radius: 16px;
+    font-size: 1.2em;
+    font-weight: 600;
+    box-shadow: 0 4px 24px rgba(102, 126, 234, 0.15);
+    z-index: 2000;
+    opacity: 1;
+    transition: opacity 0.4s;
+}
+.select-collection-label {
+    font-size: 1.08em;
+    font-weight: 500;
+    color: #444;
+    margin-bottom: 8px;
+    display: block;
+}
+.select-collection {
+    width: 100%;
+    padding: 10px 14px;
+    border-radius: 10px;
+    border: 2px solid #e2e8f0;
+    background: #f8fafc;
+    font-size: 1.08em;
+    color: #2d3748;
+    transition: border 0.2s, box-shadow 0.2s;
+    margin-bottom: 18px;
+    outline: none;
+    appearance: none;
+    box-shadow: 0 2px 8px rgba(102, 126, 234, 0.06);
+    font-family: inherit;
+}
+.select-collection:focus {
+    border: 2px solid #764ba2;
+    box-shadow: 0 0 0 2px #a78bfa44;
+    background: #fff;
+}
+</style>
+{% endblock %} 

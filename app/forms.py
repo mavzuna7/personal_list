@@ -135,14 +135,13 @@ class ContentForm(forms.ModelForm):
 
     class Meta:
         model = Content
-        fields = ['title', 'genre', 'category', 'image', 'status', 'rating', 'comment', 'release_year', 'description', 'country', 'director', 'actor']
+        fields = ['title', 'genre', 'image', 'status', 'rating', 'comment', 'release_year', 'description', 'country', 'director', 'actor']
         widgets = {
             'description': forms.Textarea(attrs={'rows': 4, 'class': 'form-control'}),
             'comment': forms.Textarea(attrs={'rows': 3, 'class': 'form-control'}),
             'image': forms.FileInput(attrs={'accept': 'image/*', 'class': 'form-control'}),
             'title': forms.TextInput(attrs={'class': 'form-control'}),
             'genre': forms.Select(attrs={'class': 'form-control'}),
-            'category': forms.Select(attrs={'class': 'form-control'}),
             'status': forms.Select(attrs={'class': 'form-control'}),
             'rating': forms.NumberInput(attrs={'class': 'form-control', 'step': '0.1', 'min': '0', 'max': '10'}),
             'release_year': forms.NumberInput(attrs={'class': 'form-control'}),
