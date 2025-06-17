@@ -92,6 +92,9 @@ class Content(models.Model):
     director = models.CharField(max_length=100, null=True, blank=True, verbose_name='Режиссёр')
     actor = models.CharField(max_length=100, null=True, blank=True, verbose_name='Актёр')
 
+    tmdb_id = models.IntegerField(null=True, blank=True, verbose_name='TMDB ID')
+    tmdb_type = models.CharField(max_length=10, null=True, blank=True, verbose_name='TMDB тип (movie/tv)')
+
     created_at = models.DateTimeField(auto_now_add=True, verbose_name='Дата создания')
     updated_at = models.DateTimeField(auto_now=True, verbose_name='Дата обновления')
 

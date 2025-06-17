@@ -86,6 +86,11 @@
             </div>
         </div>
 
+        <div style="display:none;">
+            {{ form.tmdb_id }}
+            {{ form.tmdb_type }}
+        </div>
+
         <div class="mt-4">
             <button type="submit" class="btn btn-primary">Сохранить</button>
             <a href="{% url 'home' %}" class="btn-cancel">Отмена</a>

@@ -356,11 +356,53 @@ document.addEventListener('DOMContentLoaded', function() {
     const openRecommendationsBtn = document.getElementById('openRecommendations');
     const closeRecommendationsBtn = document.getElementById('closeRecommendationsModalBtn');
     const closeRecommendationsOverlay = document.getElementById('closeRecommendationsModal');
+    const recommendationsList = document.getElementById('recommendationsList');
+
+    function renderRecommendations(recs) {
+        if (!recommendationsList) return;
+        recommendationsList.innerHTML = '';
+        if (!recs.length) {
+            recommendationsList.innerHTML = '<p>Нет рекомендаций. Добавьте больше фильмов или сериалов!</p>';
+            return;
+        }
+        recs.forEach(function(rec) {
+            const card = document.createElement('div');
+            card.className = 'card rec-card';
+            card.style.maxWidth = '150px';
+            card.style.margin = '10px 40px 50px 0';
+            card.innerHTML = `
+                <div class="movie-poster" style="width: 200px; height: 300px; margin: 0 auto; border-radius: 12px; overflow: hidden; display: flex; align-items: center; justify-content: center;">
+                    ${rec.poster_url ? `<img src="${rec.poster_url}" alt="${rec.title}" style="width: 100%; height: 100%; object-fit: cover;">` : '<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:0.5em;">Нет постера</div>'}
+                </div>
+                <div class="movie-info" style="padding: 6px 0 0 0; text-align: center;">
+                    <h3 class="movie-title" style="font-size:0.98em; font-weight:700; margin: 6px 0 2px 0;">${rec.title || 'Без названия'}</h3>
+                    <div class="movie-meta" style="font-size:0.85em; color:#7b8190; margin-bottom:2px;">
+                        <span class="movie-year">${rec.release_year || ''}</span>
+                        <span class="movie-rating">${rec.rating ? '⭐ ' + rec.rating : ''}</span>
+                    </div>
+                    <div class="movie-description" style="font-size:0.85em;color:#4a5568;">${rec.overview ? rec.overview.substring(0, 60) + (rec.overview.length > 60 ? '...' : '') : ''}</div>
+                </div>
+            `;
+            recommendationsList.appendChild(card);
+        });
+    }
 
     if (openRecommendationsBtn && recommendationsModal) {
         openRecommendationsBtn.onclick = function() {
             recommendationsModal.style.display = 'block';
             document.body.style.overflow = 'hidden';
+            // Загружаем рекомендации
+            if (recommendationsList) {
+                recommendationsList.innerHTML = '<p>Загрузка...</p>';
+                fetch('/recommendations/')
+                    .then(resp => resp.json())
+                    .then(data => {
+                        renderRecommendations(data.recommendations || []);
+                    })
+                    .catch(() => {
+                        recommendationsList.innerHTML = '<p>Ошибка загрузки рекомендаций</p>';
+                    });
+            }
         }
     }
 

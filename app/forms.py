@@ -137,10 +137,12 @@ class ContentForm(forms.ModelForm):
         label='Жанр',
         widget=forms.TextInput(attrs={'class': 'form-control', 'id': 'id_genre', 'placeholder': 'Жанр'})
     )
+    tmdb_id = forms.IntegerField(required=False, widget=forms.HiddenInput())
+    tmdb_type = forms.CharField(required=False, widget=forms.HiddenInput())
 
     class Meta:
         model = Content
-        fields = ['title', 'genre', 'image', 'status', 'rating', 'comment', 'release_year', 'description', 'country', 'director', 'actor']
+        fields = ['title', 'genre', 'image', 'status', 'rating', 'comment', 'release_year', 'description', 'country', 'director', 'actor', 'tmdb_id', 'tmdb_type']
         widgets = {
             'description': forms.Textarea(attrs={'rows': 4, 'class': 'form-control'}),
             'comment': forms.Textarea(attrs={'rows': 3, 'class': 'form-control'}),

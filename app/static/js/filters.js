@@ -79,6 +79,15 @@ document.addEventListener('DOMContentLoaded', function() {
                     if (data.genre && genreSelect) {
                         genreSelect.value = data.genre;
                     }
+                    // Устанавливаем tmdb_id и tmdb_type
+                    if (typeof data.tmdb_id !== 'undefined') {
+                        const tmdbIdInput = document.getElementById('id_tmdb_id');
+                        if (tmdbIdInput) tmdbIdInput.value = data.tmdb_id;
+                    }
+                    if (typeof data.tmdb_type !== 'undefined') {
+                        const tmdbTypeInput = document.getElementById('id_tmdb_type');
+                        if (tmdbTypeInput) tmdbTypeInput.value = data.tmdb_type;
+                    }
                 })
                 .catch(() => {
                     searchButton.disabled = false;

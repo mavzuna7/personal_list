@@ -56,7 +56,9 @@ class MovieService:
                         'actors': ', '.join([c.get('name', '') for c in details.get('credits', {}).get('cast', [])[:5]]),
                         'poster_url': f"{self.tmdb_image_base_url}/original{details.get('poster_path', '')}" if details.get('poster_path') else '',
                         'rating': details.get('vote_average', ''),
-                        'genres': [g.get('name', '') for g in details.get('genres', [])]
+                        'genres': [g.get('name', '') for g in details.get('genres', [])],
+                        'tmdb_id': movie_id,
+                        'tmdb_type': 'movie',
                     }, None)
             return { }, None
         except Exception as e:
@@ -91,7 +93,9 @@ class MovieService:
                         'actors': ', '.join([c.get('name', '') for c in details.get('credits', {}).get('cast', [])[:5]]),
                         'poster_url': f"{self.tmdb_image_base_url}/original{details.get('poster_path', '')}" if details.get('poster_path') else '',
                         'rating': details.get('vote_average', ''),
-                        'genres': [g.get('name', '') for g in details.get('genres', [])]
+                        'genres': [g.get('name', '') for g in details.get('genres', [])],
+                        'tmdb_id': tv_id,
+                        'tmdb_type': 'tv',
                     }, None)
             return { }, None
         except Exception as e:

@@ -17,6 +17,7 @@ from django.core.files.storage import default_storage
 import os
 from django.views.decorators.http import require_POST
 from django.conf import settings
+import traceback
 
 def dashboard_view(request):
     user = request.user
@@ -338,33 +339,57 @@ def user_collections_view(request, username):
     })
 
 def recommendations_view(request):
+    from django.contrib.auth.decorators import login_required
+    import requests
+    from django.conf import settings
     user = request.user
-    # Найти топ-2 жанра, которые пользователь чаще всего смотрит (completed или watching)
-    top_genres = (
-        Content.objects.filter(user=user, status__in=["completed", "watching"])
-        .values('genre')
-        .annotate(count=Count('genre'))
-        .order_by('-count')[:2]
-    )
-    genre_ids = [g['genre'] for g in top_genres if g['genre']]
-    # Найти контент этих жанров, которого нет у пользователя
-    recommendations = (
-        Content.objects.filter(genre_id__in=genre_ids)
-        .exclude(user=user)
-        .order_by('-rating')[:10]
-    )
-    data = [
-        {
-            'title': c.title,
-            'genre': c.genre.genre_name if c.genre else '',
-            'release_year': c.release_year,
-            'rating': str(c.rating) if c.rating else '',
-            'image': c.image.url if c.image else '',
-            'content_id': c.content_id,
-        }
-        for c in recommendations
-    ]
-    return JsonResponse({'recommendations': data})
+    errors = []
+    # Берём последние 2 фильма/сериала пользователя с tmdb_id
+    user_contents = Content.objects.filter(user=user, tmdb_id__isnull=False).order_by('-created_at')[:2]
+    recommendations = []
+    api_key = settings.TMDB_API_KEY
+
+    for content in user_contents:
+        if not content.tmdb_id or not content.tmdb_type:
+            continue
+        if content.tmdb_type == 'movie':
+            url = f'https://api.themoviedb.org/3/movie/{content.tmdb_id}/similar'
+        else:
+            url = f'https://api.themoviedb.org/3/tv/{content.tmdb_id}/similar'
+        params = {'api_key': api_key, 'language': 'ru-RU', 'page': 1}
+        try:
+            resp = requests.get(url, params=params, timeout=5)
+            if resp.status_code == 200:
+                results = resp.json().get('results', [])
+                for r in results:
+                    recommendations.append({
+                        'title': r.get('title') or r.get('name'),
+                        'poster_url': f"https://image.tmdb.org/t/p/w500{r.get('poster_path')}" if r.get('poster_path') else '',
+                        'overview': r.get('overview', ''),
+                        'release_year': (r.get('release_date') or r.get('first_air_date') or '')[:4],
+                        'rating': r.get('vote_average', ''),
+                        'tmdb_id': r.get('id'),
+                        'tmdb_type': content.tmdb_type,
+                    })
+            else:
+                errors.append(f"TMDB API error: {resp.status_code} {resp.text}")
+        except Exception as e:
+            errors.append(traceback.format_exc())
+
+    # Убираем дубли и свои фильмы, оставляем только 4 рекомендации
+    seen = set()
+    filtered = []
+    for rec in recommendations:
+        key = (rec['tmdb_id'], rec['tmdb_type'])
+        if key not in seen and not Content.objects.filter(user=user, tmdb_id=rec['tmdb_id'], tmdb_type=rec['tmdb_type']).exists():
+            filtered.append(rec)
+            seen.add(key)
+        if len(filtered) == 4:
+            break
+
+    if errors and not filtered:
+        return JsonResponse({'recommendations': [], 'error': '\n'.join(errors)})
+    return JsonResponse({'recommendations': filtered})
 
 @login_required
 @require_POST
