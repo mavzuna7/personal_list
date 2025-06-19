@@ -108,8 +108,10 @@ def register_view(request):
                 is_staff=False,
                 is_superuser=False,
             )
-            messages.success(request, "Регистрация успешна. Войдите в аккаунт.")
-            return redirect('login')
+            from django.contrib.auth import login
+            login(request, user)
+            messages.success(request, "Регистрация успешна. Добро пожаловать!")
+            return redirect('home')
     else:
         form = RegisterForm()
     return render(request, 'app/register.html', {'form': form})
@@ -237,13 +239,11 @@ def edit_content(request, content_id):
         content.country = country
         content.director = director
         content.actor = actor
-        if rating in [None, '']:
-            content.rating = None
-        else:
+        if rating not in [None, '']:
             try:
-                content.rating = float(rating.replace(',', '.'))
+                content.rating = round(float(rating.replace(',', '.')), 1)
             except ValueError:
-                content.rating = None
+                pass  # не меняем рейтинг, если ошибка
         content.comment = comment
         content.status = status
         content.genre = genre_value
@@ -361,7 +361,7 @@ def recommendations_view(request):
             resp = requests.get(url, params=params, timeout=5)
             if resp.status_code == 200:
                 results = resp.json().get('results', [])
-                for r in results:
+                for r in results: 
                     recommendations.append({
                         'title': r.get('title') or r.get('name'),
                         'poster_url': f"https://image.tmdb.org/t/p/w500{r.get('poster_path')}" if r.get('poster_path') else '',

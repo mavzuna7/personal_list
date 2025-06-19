@@ -102,7 +102,7 @@ body.form-centered {
     display: flex;
     align-items: center;
     justify-content: center;
-    padding: 20px;
+    padding: 0;
     background: linear-gradient(135deg, #f8fafc 0%, #e0e7ff 40%, #a5b4fc 100%);
 }
 
@@ -114,9 +114,25 @@ body.form-centered {
     border-radius: 20px;
     box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
     backdrop-filter: blur(10px);
-    margin: 0;
+    margin: 20px;
     position: relative;
     animation: fadeIn 0.5s ease;
+    margin: auto auto;
+}
+
+.container.mt-4 {
+    max-width: 400px;
+    width: 50%;
+    background: rgba(255, 255, 255, 0.95);
+    padding: 100px;
+    border-radius: 20px;
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+    backdrop-filter: blur(10px);
+    margin: 20px;
+    position: relative;
+    animation: fadeIn 0.5s ease;
+    margin: 40px auto;  
+    margin-bottom: 7px;
 }
 
 h2 {
@@ -130,6 +146,7 @@ h2 {
 .form-group {
     margin-bottom: 25px;
     position: relative;
+    margin-right: 31px;
 }
 
 label {
@@ -169,7 +186,6 @@ button {
     border: none;
     border-radius: 10px;
     font-size: 16px;
-    font-weight: 600;
     cursor: pointer;
     transition: all 0.3s ease;
     margin-top: 10px;
@@ -403,7 +419,7 @@ button:active {
     justify-content: center;
     align-items: center;
     flex-wrap: wrap;
-    margin-bottom: 24px;
+    margin-bottom: 10px;
 }
 
 .filters-container .action-buttons {
@@ -430,7 +446,7 @@ button:active {
     border: 2px solid #e2e8f0;
     border-radius: 12px;
     color: #667eea;
-    font-weight: 600;
+    font-weight: 700;
     font-size: 1em;
     cursor: pointer;
     transition: box-shadow 0.2s, color 0.2s, border-color 0.2s;
@@ -440,6 +456,7 @@ button:active {
     height: 48px;
     box-sizing: border-box;
     white-space: nowrap;
+    margin-top: 13px;
 }
 .filters-container .filter-button:hover,
 .filters-container .recommendations-button:hover,
@@ -817,12 +834,15 @@ filter-group select:focus {
     font-weight: 500;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
     transition: all 0.2s ease;
-    white-space: nowrap;
+    word-break: break-word;
+    overflow-wrap: anywhere;
 }
 
 .meta-item:hover {
     background: #edf2f7;
     transform: translateY(-1px);
+    word-break: break-word;
+    overflow-wrap: anywhere;
 }
 
 .status-watching {
@@ -928,8 +948,8 @@ filter-group select:focus {
 .content-actions {
     display: flex;
     gap: 1rem;
-    margin-top: 2rem;
-    padding-top: 2rem;
+    margin-top: 1px;
+    padding-top: 1px;
     border-top: 1px solid #e2e8f0;
     justify-content: center;
 }
@@ -951,6 +971,7 @@ filter-group select:focus {
     min-width: 160px;
     text-decoration: none;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    margin: 7px 7px 7px 7px;
 }
 
 .btn-back {
@@ -1433,7 +1454,7 @@ filter-group select:focus {
 /* Content Grid */
 .main-content-grid {
     max-width: 1400px;
-    margin: 40px auto;
+    margin: 0 auto;
     padding: 0 20px;
 }
 
@@ -1677,7 +1698,7 @@ filter-group select:focus {
     border: 2px solid #e2e8f0;
     border-radius: 12px;
     font-size: 1em;
-    background: #f8fafc;
+    background: #ffffff;
     color: #2d3748;
     transition: border-color 0.2s, box-shadow 0.2s;
 }
@@ -1696,6 +1717,7 @@ filter-group select:focus {
     justify-content: center;
 }
 .add-content-form .btn-save {
+    width: 50%;
     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
     color: #fff;
     border: none;
@@ -1706,6 +1728,7 @@ filter-group select:focus {
     cursor: pointer;
     transition: box-shadow 0.2s, transform 0.2s;
     box-shadow: 0 2px 8px rgba(102, 126, 234, 0.08);
+    margin-bottom: 2px;
 }
 .add-content-form .btn-save:hover {
     box-shadow: 0 4px 16px #b3b8c7;
@@ -1713,7 +1736,7 @@ filter-group select:focus {
 }
 .add-content-form .btn-cancel {
     display: block;
-    width: 100%;
+    width: 50%;
     padding: 14px;
     background: #fff;
     color: #764ba2;
@@ -1783,6 +1806,8 @@ filter-group select:focus {
     text-decoration: none;
     box-shadow: 0 2px 8px rgba(231, 76, 60, 0.10);
     transition: background 0.2s, box-shadow 0.2s, transform 0.2s;
+    margin-left: 130px;
+    margin-top: 7px;
 }
 .btn-confirm-delete:hover {
     background: linear-gradient(135deg, #c0392b 0%, #ff7675 100%);
@@ -1876,6 +1901,8 @@ filter-group select:focus {
     transition: background 0.2s, color 0.2s;
     text-decoration: none;
     display: inline-block;
+    margin-top: 7px;
+    margin-bottom: 1px;
 }
 .edit-content-form .btn-cancel:hover {
     background: #d1d5db;
@@ -1950,11 +1977,11 @@ filter-group select:focus {
 .add-content-form textarea {
     width: 100%;
     padding: 12px 15px;
-    border: 2px solid #e1e1e1;
+    border: 2px solid #e2e8f0;
     border-radius: 10px;
     font-size: 15px;
     transition: all 0.3s ease;
-    background: #f8f9fa;
+    background: #ffffff;
     margin-bottom: 8px;
 }
 .add-content-form select:focus,
@@ -1974,4 +2001,47 @@ filter-group select:focus {
     color: #4a4a4a;
     margin-bottom: 6px;
 }
+
+.long-description {
+    position: relative;
+    max-height: 180px;
+    overflow: hidden;
+    transition: max-height 0.3s;
+    padding-right: 8px;
+    line-height: 1.7;
+}
+.long-description.collapsed::after {
+    content: '';
+    position: absolute;
+    left: 0; right: 0; bottom: 0; height: 40px;
+    background: linear-gradient(to bottom, transparent, #fff 90%);
+    pointer-events: none;
+}
+.long-description:not(.collapsed) {
+    max-height: 700px;
+    overflow: visible;
+}
+.toggle-desc-link {
+    display: inline-block;
+    margin-top: 8px;
+    color: #667eea;
+    font-weight: 600;
+    cursor: pointer;
+    text-decoration: none;
+    font-size: 1em;
+    border-radius: 10px;
+    background: linear-gradient(135deg, #f6f8fb 0%, #e9ecef 100%);
+    border: 2px solid #e2e8f0;
+    padding: 10px 22px;
+    box-shadow: 0 2px 8px rgba(102, 126, 234, 0.08);
+    transition: color 0.2s, border-color 0.2s, background 0.2s, box-shadow 0.2s;
+}
+.toggle-desc-link:hover {
+    color: #764ba2;
+    border-color: #764ba2;
+    background: linear-gradient(135deg, #e0e7ff 0%, #a5b4fc 100%);
+    box-shadow: 0 4px 16px #b3b8c7;
+    text-decoration: none;
+}
+
 

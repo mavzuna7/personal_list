@@ -3,104 +3,78 @@
 {% load static %}
 
 {% block content %}
-<div class="container mt-4">
-    <h2>Добавить новый контент</h2>
-    <form method="post" enctype="multipart/form-data" class="mt-4 add-content-form">
-        {% csrf_token %}
-        
-        <div class="row mb-4">
-            <div class="col-md-8">
-                <div class="form-group">
-                    {{ form.search_title.label_tag }}
-                    <div class="input-group">
-                        {{ form.search_title }}
-                        <div class="input-group-append">
-                            <button type="button" class="btn btn-primary" id="search-content">Поиск</button>
-                        </div>
-                    </div>
-                    <small class="form-text text-muted">Введите название фильма или сериала для автоматического заполнения информации</small>
+<div class="add-content-page">
+    <div class="add-content-card">
+        <h1><span style="vertical-align: middle; margin-right: 10px;">➕</span>Добавить новый контент</h1>
+        <form method="post" enctype="multipart/form-data" class="add-content-form">
+            {% csrf_token %}
+            <div class="form-group">
+                <label for="id_search_title">Поиск фильма или сериала:</label>
+                <div style="display: flex; gap: 10px; align-items: center;">
+                    {{ form.search_title }}
+                    <button type="button" class="btn-save" id="search-content" style="min-width: 120px;">Поиск</button>
                 </div>
-                <div class="form-group">
-                    {{ form.content_type.label_tag }}
-                    <div class="form-check form-check-inline">
-                        {{ form.content_type }}
-                    </div>
+                <small class="form-text text-muted">Введите название фильма или сериала для автоматического заполнения информации</small>
+            </div>
+            <div class="form-group">
+                <label>Тип контента:</label>
+                <div style="display: flex; gap: 24px; margin-top: 6px;">
+                    {{ form.content_type }}
                 </div>
             </div>
-        </div>
-
-        <div class="row">
-            <div class="col-md-6">
-                <div class="form-group">
-                    {{ form.title.label_tag }}
-                    {{ form.title }}
+            <hr style="margin: 18px 0; border: none; border-top: 1.5px solid #e2e8f0;">
+            <div style="display: flex; gap: 32px; flex-wrap: wrap;">
+                <div style="flex: 1 1 260px; min-width: 220px;">
+                    <div class="form-group">{{ form.title.label_tag }}{{ form.title }}</div>
+                    <div class="form-group">{{ form.genre.label_tag }}{{ form.genre }}</div>
+                    <div class="form-group">{{ form.status.label_tag }}{{ form.status }}</div>
+                    <div class="form-group">{{ form.rating.label_tag }}{{ form.rating }}</div>
                 </div>
-                <div class="form-group">
-                    {{ form.genre.label_tag }}
-                    {{ form.genre }}
-                </div>
-                <div class="form-group">
-                    {{ form.status.label_tag }}
-                    {{ form.status }}
-                </div>
-                <div class="form-group">
-                    {{ form.rating.label_tag }}
-                    {{ form.rating }}
+                <div style="flex: 1 1 260px; min-width: 220px;">
+                    <div class="form-group">{{ form.release_year.label_tag }}{{ form.release_year }}</div>
+                    <div class="form-group">{{ form.country.label_tag }}{{ form.country }}</div>
+                    <div class="form-group">{{ form.director.label_tag }}{{ form.director }}</div>
+                    <div class="form-group">{{ form.actor.label_tag }}{{ form.actor }}</div>
                 </div>
             </div>
-            <div class="col-md-6">
-                <div class="form-group">
-                    {{ form.release_year.label_tag }}
-                    {{ form.release_year }}
-                </div>
-                <div class="form-group">
-                    {{ form.country.label_tag }}
-                    {{ form.country }}
-                </div>
-                <div class="form-group">
-                    {{ form.director.label_tag }}
-                    {{ form.director }}
-                </div>
-                <div class="form-group">
-                    {{ form.actor.label_tag }}
-                    {{ form.actor }}
-                </div>
-                <div class="form-group">
+            <div class="form-group" style="display: flex; align-items: flex-start; gap: 24px; margin-top: 0; margin-bottom: 18px;">
+                <div style="flex:1; min-width: 180px;">
                     {{ form.image.label_tag }}
                     {{ form.image }}
-                    <div id="poster-preview" class="mt-2"></div>
+                </div>
+                <div style="flex:0 0 160px; max-width: 180px;">
+                    <div id="poster-preview" class="poster-preview-box" style="width: 150px; height: 210px; background: #f6f8fb; border: 2px dashed #e2e8f0; border-radius: 14px; display: flex; align-items: center; justify-content: center; overflow: hidden; box-shadow: 0 2px 8px rgba(102,126,234,0.06);">
+                        <span style="color: #bbb; font-size: 0.95em;">Превью постера</span>
+                    </div>
                 </div>
             </div>
-        </div>
-
-        <div class="row">
-            <div class="col-12">
-                <div class="form-group">
-                    {{ form.description.label_tag }}
-                    {{ form.description }}
-                </div>
-                <div class="form-group">
-                    {{ form.comment.label_tag }}
-                    {{ form.comment }}
-                </div>
+            <hr style="margin: 18px 0; border: none; border-top: 1.5px solid #e2e8f0;">
+            <div class="form-group">{{ form.description.label_tag }}{{ form.description }}</div>
+            <div class="form-group">{{ form.comment.label_tag }}{{ form.comment }}</div>
+            <div style="display:none;">{{ form.tmdb_id }}{{ form.tmdb_type }}</div>
+            <div class="form-actions">
+                <button type="submit" class="btn-save">Сохранить</button>
+                <a href="{% url 'home' %}" class="btn-cancel">Отмена</a>
             </div>
-        </div>
-
-        <div style="display:none;">
-            {{ form.tmdb_id }}
-            {{ form.tmdb_type }}
-        </div>
-
-        <div class="mt-4">
-            <button type="submit" class="btn btn-primary">Сохранить</button>
-            <a href="{% url 'home' %}" class="btn-cancel">Отмена</a>
-        </div>
-    </form>
+        </form>
+    </div>
 </div>
 
 {% block extra_js %}
 <script>
-// ... удалён дублирующийся JS-код поиска ...
+document.addEventListener('DOMContentLoaded', function() {
+    var ratingInput = document.querySelector('input[name="rating"]');
+    if (ratingInput) {
+        ratingInput.addEventListener('change', function() {
+            let val = ratingInput.value.replace(',', '.');
+            let num = parseFloat(val);
+            if (!isNaN(num)) {
+                let rounded = Math.round(num * 10) / 10;
+                ratingInput.value = rounded.toString().replace('.', ',');
+            }
+        });
+    }
+});
 </script>
 {% endblock %}
 {% endblock %} 

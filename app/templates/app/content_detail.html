@@ -61,7 +61,10 @@
             {% if content.description %}
                 <div class="content-detail-section">
                     <h2>Описание</h2>
-                    <p class="content-detail-description">{{ content.description }}</p>
+                    <div class="long-description collapsed" id="desc-block">
+                        {{ content.description }}
+                    </div>
+                    <a href="#" id="toggleDesc" class="toggle-desc-link">Показать полностью</a>
                 </div>
             {% endif %}
 
@@ -139,5 +142,17 @@ window.onclick = function(event) {
         hideDeleteModal();
     }
 }
+
+document.addEventListener('DOMContentLoaded', function() {
+    var desc = document.getElementById('desc-block');
+    var toggle = document.getElementById('toggleDesc');
+    if (desc && toggle) {
+        toggle.onclick = function(e) {
+            e.preventDefault();
+            desc.classList.toggle('collapsed');
+            toggle.textContent = desc.classList.contains('collapsed') ? 'Показать полностью' : 'Скрыть';
+        };
+    }
+});
 </script>
 {% endblock %} 

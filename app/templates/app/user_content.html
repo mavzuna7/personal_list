@@ -40,7 +40,7 @@
     <form id="addToCollectionForm" method="post" action="{% url 'add_to_collection' %}">
       {% csrf_token %}
       <input type="hidden" name="content_id" id="modalContentId">
-      <label for="statusSelect" class="select-collection-label">Выберите статус:</label>
+      <label for="statusSelect" class="select-collection-label">Выберите коллекцию:</label>
       <select name="status" id="statusSelect" required class="select-collection">
         {% for value, label in contents.model.STATUS_CHOICES %}
           <option value="{{ value }}">{{ label }}</option>
